@@ -20,8 +20,11 @@ connectDB();
 // Middleware
 const corsOptions = {
     origin: function (origin, callback) {
-        // Allow requests from any localhost port or no origin (e.g. curl/Postman)
-        if (!origin || /^http:\/\/localhost:\d+$/.test(origin)) {
+        const allowedOrigins = [
+            'https://erp-cell-one.vercel.app',
+            'http://localhost:5173'
+        ];
+        if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));

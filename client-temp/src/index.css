@@ -2215,3 +2215,392 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   ADD STUDENT FULL PAGE FORM
+═══════════════════════════════════════════ */
+
+.add-student-page {
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+}
+
+.add-student-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.add-student-topbar-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.add-student-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Section card */
+.add-student-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+/* Section header */
+.add-student-section-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: .85rem;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.add-student-section-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.add-student-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Grid helpers */
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-col-span-2 {
+  grid-column: span 2;
+}
+
+.form-col-span-3 {
+  grid-column: 1 / -1;
+}
+
+/* Parent section label */
+.parent-section-label {
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .85rem;
+  padding-left: 2px;
+}
+
+/* Guardian type radio buttons */
+.guardian-type-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.guardian-type-btn {
+  padding: .45rem 1.1rem;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+
+.guardian-type-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.guardian-type-btn:hover:not(.active) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* File drop zone */
+.file-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  cursor: pointer;
+  transition: all .2s;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: .85rem;
+  text-align: center;
+  min-height: 90px;
+}
+
+.file-dropzone:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.file-dropzone p span {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.file-dropzone-selected {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: #059669;
+  font-weight: 600;
+  font-size: .875rem;
+}
+
+/* Submit bar */
+.add-student-submit-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  position: sticky;
+  bottom: 1rem;
+}
+
+/* ── Responsive ────────────────────────────── */
+@media (max-width: 900px) {
+  .form-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-col-span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .add-student-page {
+    padding: 1rem;
+  }
+
+  .form-grid-3,
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .form-col-span-2,
+  .form-col-span-3 {
+    grid-column: span 1;
+  }
+
+  .add-student-submit-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-student-submit-bar button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* ═══════════════════════════════════════════
+   STUDENT DASHBOARD TABS & DETAIL SECTIONS
+═══════════════════════════════════════════ */
+
+/* Tab navigation */
+.std-tab-nav {
+  display: flex;
+  gap: .35rem;
+  margin-bottom: 1.5rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.std-tab-btn {
+  flex: 1;
+  padding: .5rem 1rem;
+  border-radius: 9px;
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  transition: all .2s;
+  cursor: pointer;
+}
+
+.std-tab-btn:hover {
+  color: var(--text);
+  background: rgba(79, 70, 229, .06);
+}
+
+.std-tab-btn.active {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+}
+
+/* Details grid layout (masonry-like 2-col) */
+.std-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* Detail card row */
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .45rem .5rem;
+  border-radius: 8px;
+  transition: background .15s;
+}
+
+.detail-row:hover {
+  background: var(--bg);
+}
+
+.detail-label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  min-width: 130px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .std-tab-nav {
+    overflow-x: auto;
+  }
+
+  .std-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-label {
+    min-width: 110px;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-row {
+    flex-direction: column;
+    gap: .2rem;
+  }
+
+  .detail-label {
+    min-width: unset;
+  }
+}
+
+
+/* ── Login Details Card (Student Dashboard) ── */
+.login-detail-box {
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+}
+
+.login-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+
+.login-detail-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: #1e40af;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.login-detail-value-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.login-detail-value {
+  font-size: .95rem;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-all;
+  flex: 1;
+}
+
+.login-pw {
+  font-family: monospace;
+  font-size: 1rem;
+  letter-spacing: .08em;
+  color: #4f46e5;
+}
+
+.login-detail-hint {
+  font-size: .78rem;
+  color: #1e40af;
+  opacity: .8;
+  margin-top: .25rem;
+}
+
+.login-detail-hint code {
+  background: #dbeafe;
+  padding: .1rem .35rem;
+  border-radius: 4px;
+  font-size: .75rem;
+}

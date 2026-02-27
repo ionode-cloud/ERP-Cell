@@ -64,7 +64,30 @@ const getMyProfile = async (req, res) => {
 // @route POST /api/students
 const createStudent = async (req, res) => {
     try {
-        const { name, email, phone, rollNo, branch, semester, gender, dob, address, guardianName, guardianPhone } = req.body;
+        const {
+            name, email, phone, rollNo, admissionNo, branch, semester,
+            academicYear, className, section, gender, dob, category, photoUrl,
+            // parent
+            fatherName, fatherPhone, fatherOccupation, fatherPhotoUrl,
+            motherName, motherPhone, motherOccupation, motherPhotoUrl,
+            guardianType, guardianName, guardianEmail, guardianPhone,
+            guardianOccupation, guardianAddress, guardianPhotoUrl,
+            // medical
+            bloodGroup, height, weight,
+            // bank
+            bankAccountNo, bankName, ifscCode, nationalId,
+            // school
+            prevSchoolName, prevSchoolAddress,
+            // address
+            currentAddress, permanentAddress, address,
+            // hostel
+            hostelName, roomNo,
+            // docs
+            docName, docUrl,
+            // extra
+            studentDetails,
+        } = req.body;
+
         if (!email) return res.status(400).json({ success: false, message: 'Email is required (used as login ID)' });
 
         // Check duplicate
@@ -78,7 +101,21 @@ const createStudent = async (req, res) => {
         const user = await User.create({ name, loginId: email, password: plainPassword, role: 'student' });
 
         const student = await Student.create({
-            name, email, phone, rollNo, branch, semester, gender, dob, address, guardianName, guardianPhone, userId: user._id
+            name, email, phone, rollNo, admissionNo, branch, semester,
+            academicYear, className, section, gender, dob, category, photoUrl,
+            fatherName, fatherPhone, fatherOccupation, fatherPhotoUrl,
+            motherName, motherPhone, motherOccupation, motherPhotoUrl,
+            guardianType, guardianName, guardianEmail, guardianPhone,
+            guardianOccupation, guardianAddress, guardianPhotoUrl,
+            bloodGroup, height, weight,
+            bankAccountNo, bankName, ifscCode, nationalId,
+            prevSchoolName, prevSchoolAddress,
+            currentAddress, permanentAddress,
+            address: address || currentAddress || '',
+            hostelName, roomNo,
+            docName, docUrl,
+            studentDetails,
+            userId: user._id
         });
         user.refId = student._id;
         await user.save();

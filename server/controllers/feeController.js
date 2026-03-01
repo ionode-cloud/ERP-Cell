@@ -49,9 +49,18 @@ const getMyFee = async (req, res) => {
 // @desc  Record a payment for a single student
 const addPayment = async (req, res) => {
     try {
-        const { studentId, amount, method, transactionId, remarks } = req.body;
-        const fee = await Fee.findOne({ student: studentId });
-        if (!fee) return res.status(404).json({ success: false, message: 'Fee record not found' });
+        const { studentId, rollNo, amount, method, transactionId, remarks } = req.body;
+
+        let targetStudentId = studentId;
+        if (rollNo) {
+            const student = await Student.findOne({ rollNo });
+            if (!student) return res.status(404).json({ success: false, message: 'Student not found with this Roll No' });
+            targetStudentId = student._id;
+        }
+
+        const fee = await Fee.findOne({ student: targetStudentId });
+        if (!fee) return res.status(404).json({ success: false, message: 'Fee record not found for this student' });
+
         fee.payments.push({ amount: Number(amount), method: method || 'Cash', transactionId, remarks });
         await fee.save();
         res.json({ success: true, data: fee, message: 'Payment recorded successfully' });

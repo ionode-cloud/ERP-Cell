@@ -13,7 +13,7 @@ const studentSchema = new mongoose.Schema({
     className: { type: String, default: '' },   // e.g. "Primary"
     section: { type: String, default: '' },   // e.g. "Science"
     admissionYear: { type: Number, default: new Date().getFullYear() },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Male' },
+    gender: { type: String, default: 'Male' },
     dob: { type: Date },
     category: { type: String, default: '' },   // General / OBC / SC / ST
     photoUrl: { type: String, default: '' },
@@ -29,7 +29,7 @@ const studentSchema = new mongoose.Schema({
     motherOccupation: { type: String, default: '' },
     motherPhotoUrl: { type: String, default: '' },
 
-    guardianType: { type: String, enum: ['Father', 'Mother', 'Others'], default: 'Father' },
+    guardianType: { type: String, default: 'Father' },
     guardianName: { type: String, default: '' },
     guardianEmail: { type: String, default: '' },
     guardianPhone: { type: String, default: '' },

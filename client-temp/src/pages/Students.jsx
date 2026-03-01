@@ -159,24 +159,15 @@ function StudentFullForm({ branches, initialForm = emptyForm, isEdit = false, on
                     <div className="form-grid-3">
                         <div className="form-group">
                             <label>Academic Year</label>
-                            <select value={form.academicYear} onChange={set('academicYear')}>
-                                <option value="">Select Year</option>
-                                {['2023/2024', '2024/2025', '2025/2026', '2026/2027'].map(y => <option key={y}>{y}</option>)}
-                            </select>
+                            <input type="text" placeholder="Enter academic year" value={form.academicYear} onChange={set('academicYear')} />
                         </div>
                         <div className="form-group">
                             <label>Class</label>
-                            <select value={form.className} onChange={set('className')}>
-                                <option value="">Select Class</option>
-                                {['Primary', 'Secondary', 'Higher Secondary', 'UG', 'PG'].map(c => <option key={c}>{c}</option>)}
-                            </select>
+                            <input type="text" placeholder="Enter class" value={form.className} onChange={set('className')} />
                         </div>
                         <div className="form-group">
                             <label>Section</label>
-                            <select value={form.section} onChange={set('section')}>
-                                <option value="">Select Section</option>
-                                {['Science', 'Commerce', 'Arts', 'A', 'B', 'C', 'D'].map(s => <option key={s}>{s}</option>)}
-                            </select>
+                            <input type="text" placeholder="Enter section" value={form.section} onChange={set('section')} />
                         </div>
                         <div className="form-group">
                             <label>Branch *</label>
@@ -206,17 +197,11 @@ function StudentFullForm({ branches, initialForm = emptyForm, isEdit = false, on
                         </div>
                         <div className="form-group">
                             <label>Category</label>
-                            <select value={form.category} onChange={set('category')}>
-                                <option value="">Select a Category</option>
-                                {['General', 'OBC', 'SC', 'ST', 'EWS'].map(c => <option key={c}>{c}</option>)}
-                            </select>
+                            <input type="text" placeholder="Enter category" value={form.category} onChange={set('category')} />
                         </div>
                         <div className="form-group">
                             <label>Gender</label>
-                            <select value={form.gender} onChange={set('gender')}>
-                                <option value="">Select</option>
-                                <option>Male</option><option>Female</option><option>Other</option>
-                            </select>
+                            <input type="text" placeholder="Enter gender" value={form.gender} onChange={set('gender')} />
                         </div>
                         <div className="form-group">
                             <label>Date of Birth</label>
@@ -255,15 +240,8 @@ function StudentFullForm({ branches, initialForm = emptyForm, isEdit = false, on
                         <div className="form-group form-col-span-2"><label>Mother's Photo</label><FileDropZone label="mother-photo" current={form.motherPhotoUrl} onChange={v => setForm(f => ({ ...f, motherPhotoUrl: v }))} /></div>
                     </div>
                     <p className="parent-section-label" style={{ marginTop: '1.25rem' }}>Guardian Details</p>
-                    <div className="guardian-type-row">
-                        {['Father', 'Mother', 'Others'].map(t => (
-                            <label key={t} className={`guardian-type-btn ${form.guardianType === t ? 'active' : ''}`}>
-                                <input type="radio" name="guardianType" value={t} checked={form.guardianType === t} onChange={set('guardianType')} hidden />
-                                {t}
-                            </label>
-                        ))}
-                    </div>
                     <div className="form-grid-3" style={{ marginTop: '1rem' }}>
+                        <div className="form-group"><label>Guardian Type</label><input type="text" placeholder="Enter guardian type" value={form.guardianType} onChange={set('guardianType')} /></div>
                         <div className="form-group"><label>Guardian Name</label><input placeholder="Enter guardian name" value={form.guardianName} onChange={set('guardianName')} /></div>
                         <div className="form-group"><label>Guardian Email</label><input type="email" placeholder="Enter guardian email" value={form.guardianEmail} onChange={set('guardianEmail')} /></div>
                         <div className="form-group"><label>Phone Number</label><input placeholder="Enter guardian phone" value={form.guardianPhone} onChange={set('guardianPhone')} /></div>
@@ -279,10 +257,7 @@ function StudentFullForm({ branches, initialForm = emptyForm, isEdit = false, on
                     <div className="form-grid-3">
                         <div className="form-group">
                             <label>Blood Group</label>
-                            <select value={form.bloodGroup} onChange={set('bloodGroup')}>
-                                <option value="">Select</option>
-                                {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(g => <option key={g}>{g}</option>)}
-                            </select>
+                            <input type="text" placeholder="Enter blood group" value={form.bloodGroup} onChange={set('bloodGroup')} />
                         </div>
                         <div className="form-group"><label>Height (cm)</label><input placeholder="Enter height" value={form.height} onChange={set('height')} /></div>
                         <div className="form-group"><label>Weight (kg)</label><input placeholder="Enter weight" value={form.weight} onChange={set('weight')} /></div>

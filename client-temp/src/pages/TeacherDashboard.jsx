@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 import {
     Users, ClipboardCheck, GraduationCap, BookOpen, Mail, Phone, Award,
     Plus, CheckCircle, XCircle, Clock, Send, ChevronRight, PenLine, X,
-    Calendar, History, Edit2, Trash2, Save, Key, Copy
+    Calendar, History, Edit2, Trash2, Save, Key, Copy,
+    Heart, Landmark, School, Home, Building2, FileText, Lock, User, Briefcase
 } from 'lucide-react';
 
 // ─── Status helpers ───
@@ -38,6 +39,32 @@ function buildClassHistory(records) {
         map[key].studentRows.push({ studentId: r.student?._id || r.student, name: r.student?.name || '—', rollNo: r.student?.rollNo || '', status: r.status });
     });
     return Object.values(map).sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+}
+
+// ─── Detail UI Helpers ───
+function DetailRow({ label, value }) {
+    return (
+        <div className="detail-row">
+            <span className="detail-label">{label}</span>
+            <span className="detail-value">{value || <span style={{ color: '#94a3b8' }}>—</span>}</span>
+        </div>
+    );
+}
+
+function DetailCard({ icon: Icon, title, color = '#4f46e5', children }) {
+    return (
+        <div className="card" style={{ marginBottom: 0 }}>
+            <div className="card-header-row" style={{ marginBottom: '1rem' }}>
+                <h2 className="card-title">
+                    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, background: color + '18', color, marginRight: 8 }}>
+                        <Icon size={16} />
+                    </span>
+                    {title}
+                </h2>
+            </div>
+            {children}
+        </div>
+    );
 }
 
 // ─── EDIT SESSION PANEL ───
@@ -346,6 +373,12 @@ export default function TeacherDashboard() {
     const [showCreateClass, setShowCreateClass] = useState(false);
     const [credModal, setCredModal] = useState(null); // { name, loginId, password }
     const [copied, setCopied] = useState('');
+    const [activeTab, setActiveTab] = useState('overview');
+
+    const TABS = [
+        { id: 'overview', label: 'Overview' },
+        { id: 'details', label: 'My Details' },
+    ];
 
     const fetchAll = async () => {
         try {
@@ -360,13 +393,12 @@ export default function TeacherDashboard() {
                     const attRes = await api.get(`/attendance/branch/${branchId}`);
                     setAttendance(attRes.data.data || []);
                 } catch (attErr) {
-                    console.warn('Attendance fetch skipped:', attErr?.response?.data?.message || attErr.message);
-                    toast.error('Attendance: ' + (attErr?.response?.data?.message || 'Could not load'));
+                    // skip error toast for attendance if user has no class created yet
                 }
             }
         } catch (e) {
             console.error(e);
-            toast.error('Failed to load profile: ' + (e?.response?.data?.message || e.message));
+            toast.error('Failed to load profile');
         } finally { setLoading(false); }
     };
 
@@ -454,149 +486,246 @@ export default function TeacherDashboard() {
                 <div className="std-profile-meta">
                     <div className="meta-item"><Mail size={14} /><span className="meta-value">{user?.loginId}</span></div>
                     {profile.phone && <div className="meta-item"><Phone size={14} /><span className="meta-value">{profile.phone}</span></div>}
-                    {profile.experience && <div className="meta-item"><Award size={14} /><span className="meta-value">{profile.experience} yrs exp</span></div>}
+                    {profile.experience && <div className="meta-item"><Award size={14} /><span className="meta-value">{profile.experience} exp</span></div>}
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="std-stats-grid">
-                <div className="std-stat-card">
-                    <div className="std-stat-icon" style={{ background: '#dbeafe' }}><Users size={22} color="#2563eb" /></div>
-                    <div className="std-stat-body">
-                        <div className="std-stat-value" style={{ color: '#1e40af' }}>{students.length}</div>
-                        <div className="std-stat-label">My Students</div>
-                        <div className="std-stat-sub">{profile.branch?.name?.split(' ').slice(0, 2).join(' ')}</div>
-                    </div>
-                </div>
-                <div className="std-stat-card">
-                    <div className="std-stat-icon" style={{ background: '#d1fae5' }}><ClipboardCheck size={22} color="#059669" /></div>
-                    <div className="std-stat-body">
-                        <div className="std-stat-value" style={{ color: '#059669' }}>{totalAtt}</div>
-                        <div className="std-stat-label">Records Logged</div>
-                        <div className="std-stat-sub">{attPct}% overall present</div>
-                    </div>
-                </div>
-                <div className="std-stat-card">
-                    <div className="std-stat-icon" style={{ background: '#ede9fe' }}><BookOpen size={22} color="#7c3aed" /></div>
-                    <div className="std-stat-body">
-                        <div className="std-stat-value" style={{ color: '#7c3aed', fontSize: '1rem' }}>
-                            {Array.isArray(profile.subjects) ? profile.subjects.length : 1}
-                        </div>
-                        <div className="std-stat-label">Subjects</div>
-                        <div className="std-stat-sub">
-                            {Array.isArray(profile.subjects) ? profile.subjects.slice(0, 2).join(', ') : (profile.subjects || '—')}
-                        </div>
-                    </div>
-                </div>
-                <div className="std-stat-card">
-                    <div className="std-stat-icon" style={{ background: '#fce7f3' }}><GraduationCap size={22} color="#db2777" /></div>
-                    <div className="std-stat-body">
-                        <div className="std-stat-value" style={{ color: '#db2777', fontSize: '1rem' }}>{profile.branch?.code || '—'}</div>
-                        <div className="std-stat-label">Department</div>
-                        <div className="std-stat-sub">{profile.branch?.duration || '4 Years'}</div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Create Class / Conduct Section */}
-            {showCreateClass ? (
-                <div className="card" style={{ marginBottom: '1.5rem' }}>
-                    <CreateClassPanel
-                        profile={profile}
-                        students={students}
-                        attendance={attendance}
-                        onClose={() => { setShowCreateClass(false); refreshAttendance(); }}
-                        onSubmitted={refreshAttendance}
-                    />
-                </div>
-            ) : (
-                <div className="create-class-cta card">
-                    <div className="cta-left">
-                        <div className="cta-icon"><PenLine size={28} color="#2563eb" /></div>
-                        <div>
-                            <div className="cta-title">Conduct a Class</div>
-                            <div className="cta-sub">Select a subject &amp; date, mark attendance and assign marks for all students in one go</div>
-                        </div>
-                    </div>
-                    <button className="btn-primary" onClick={() => setShowCreateClass(true)}>
-                        <Plus size={16} /> Create Class
+            {/* Tab Nav */}
+            <div className="std-tab-nav">
+                {TABS.map(t => (
+                    <button key={t.id} className={`std-tab-btn ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
+                        {t.label}
                     </button>
-                </div>
-            )}
+                ))}
+            </div>
 
-            <div className="std-two-col">
-                {/* Students List — with credentials button */}
-                <div className="card">
-                    <div className="card-header-row">
-                        <h2 className="card-title"><Users size={18} />My Students — {profile.branch?.name}</h2>
-                    </div>
-                    {students.length === 0 ? (
-                        <div className="empty-state-sm">No students in your branch</div>
-                    ) : (
-                        <div className="table-wrapper" style={{ maxHeight: '360px', overflowY: 'auto' }}>
-                            <table className="mini-table">
-                                <thead><tr><th>Name</th><th>Roll No</th><th>Sem</th><th>Login ID</th><th>Creds</th></tr></thead>
-                                <tbody>
-                                    {students.map(s => (
-                                        <tr key={s._id}>
-                                            <td><div className="cell-with-avatar"><div className="avatar avatar-sm">{s.name?.charAt(0)}</div>{s.name}</div></td>
-                                            <td>{s.rollNo}</td>
-                                            <td>Sem {s.semester}</td>
-                                            <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>{s.userId?.loginId || s.email || '—'}</td>
-                                            <td>
-                                                <button
-                                                    title="View/Reset Student Credentials"
-                                                    onClick={() => handleRegenCred(s._id, s.name)}
-                                                    style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', background: '#fef9c3', color: '#d97706', display: 'flex', alignItems: 'center', gap: 3, fontSize: '.72rem', fontWeight: 600 }}
-                                                >
-                                                    <Key size={12} />Reset
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
-
-                {/* Recent Attendance Log + Subjects */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                    <div className="card">
-                        <div className="card-header-row">
-                            <h2 className="card-title"><ClipboardCheck size={18} />Recent Attendance Log</h2>
-                            <span className="text-muted-sm">{totalAtt} total</span>
-                        </div>
-                        {recentAtt.length === 0 ? (
-                            <div className="empty-state-sm">No records yet — create a class above</div>
-                        ) : (
-                            recentAtt.map((a, i) => (
-                                <div key={i} className="att-row">
-                                    <div className="att-row-left">
-                                        <Calendar size={13} />
-                                        <span className="att-subject">{a.subject}</span>
-                                        <span className="text-muted-sm">{a.student?.name || '—'}</span>
-                                        {a.marks != null && <span className="marks-chip">{a.marks}/100</span>}
-                                    </div>
-                                    <span
-                                        className="badge badge-sm"
-                                        style={{ background: STATUS_BG[a.status], color: STATUS_COLORS[a.status] }}
-                                    >{a.status}</span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-
-                    {Array.isArray(profile.subjects) && profile.subjects.length > 0 && (
-                        <div className="card">
-                            <h2 className="card-title"><BookOpen size={18} />My Subjects</h2>
-                            <div className="subjects-grid">
-                                {profile.subjects.map((s, i) => <div key={i} className="subject-chip subject-chip-green">{s}</div>)}
+            {/* ═══════════ OVERVIEW TAB ═══════════ */}
+            {activeTab === 'overview' && (
+                <>
+                    {/* Stats */}
+                    <div className="std-stats-grid">
+                        <div className="std-stat-card">
+                            <div className="std-stat-icon" style={{ background: '#dbeafe' }}><Users size={22} color="#2563eb" /></div>
+                            <div className="std-stat-body">
+                                <div className="std-stat-value" style={{ color: '#1e40af' }}>{students.length}</div>
+                                <div className="std-stat-label">My Students</div>
+                                <div className="std-stat-sub">{profile.branch?.name?.split(' ').slice(0, 2).join(' ')}</div>
                             </div>
                         </div>
+                        <div className="std-stat-card">
+                            <div className="std-stat-icon" style={{ background: '#d1fae5' }}><ClipboardCheck size={22} color="#059669" /></div>
+                            <div className="std-stat-body">
+                                <div className="std-stat-value" style={{ color: '#059669' }}>{totalAtt}</div>
+                                <div className="std-stat-label">Records Logged</div>
+                                <div className="std-stat-sub">{attPct}% overall present</div>
+                            </div>
+                        </div>
+                        <div className="std-stat-card">
+                            <div className="std-stat-icon" style={{ background: '#ede9fe' }}><BookOpen size={22} color="#7c3aed" /></div>
+                            <div className="std-stat-body">
+                                <div className="std-stat-value" style={{ color: '#7c3aed', fontSize: '1rem' }}>
+                                    {Array.isArray(profile.subjects) ? profile.subjects.length : 1}
+                                </div>
+                                <div className="std-stat-label">Subjects</div>
+                                <div className="std-stat-sub">
+                                    {Array.isArray(profile.subjects) ? profile.subjects.slice(0, 2).join(', ') : (profile.subjects || '—')}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="std-stat-card">
+                            <div className="std-stat-icon" style={{ background: '#fce7f3' }}><GraduationCap size={22} color="#db2777" /></div>
+                            <div className="std-stat-body">
+                                <div className="std-stat-value" style={{ color: '#db2777', fontSize: '1rem' }}>{profile.branch?.code || '—'}</div>
+                                <div className="std-stat-label">Department</div>
+                                <div className="std-stat-sub">{profile.branch?.duration || '4 Years'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Create Class / Conduct Section */}
+                    {showCreateClass ? (
+                        <div className="card" style={{ marginBottom: '1.5rem' }}>
+                            <CreateClassPanel
+                                profile={profile}
+                                students={students}
+                                attendance={attendance}
+                                onClose={() => { setShowCreateClass(false); refreshAttendance(); }}
+                                onSubmitted={refreshAttendance}
+                            />
+                        </div>
+                    ) : (
+                        <div className="create-class-cta card">
+                            <div className="cta-left">
+                                <div className="cta-icon"><PenLine size={28} color="#2563eb" /></div>
+                                <div>
+                                    <div className="cta-title">Conduct a Class</div>
+                                    <div className="cta-sub">Select a subject &amp; date, mark attendance and assign marks for all students in one go</div>
+                                </div>
+                            </div>
+                            <button className="btn-primary" onClick={() => setShowCreateClass(true)}>
+                                <Plus size={16} /> Create Class
+                            </button>
+                        </div>
                     )}
+
+                    <div className="std-two-col">
+                        {/* Students List — with credentials button */}
+                        <div className="card">
+                            <div className="card-header-row">
+                                <h2 className="card-title"><Users size={18} />My Students — {profile.branch?.name}</h2>
+                            </div>
+                            {students.length === 0 ? (
+                                <div className="empty-state-sm">No students in your branch</div>
+                            ) : (
+                                <div className="table-wrapper" style={{ maxHeight: '360px', overflowY: 'auto' }}>
+                                    <table className="mini-table">
+                                        <thead><tr><th>Name</th><th>Roll No</th><th>Sem</th><th>Login ID</th><th>Creds</th></tr></thead>
+                                        <tbody>
+                                            {students.map(s => (
+                                                <tr key={s._id}>
+                                                    <td><div className="cell-with-avatar"><div className="avatar avatar-sm">{s.name?.charAt(0)}</div>{s.name}</div></td>
+                                                    <td>{s.rollNo}</td>
+                                                    <td>Sem {s.semester}</td>
+                                                    <td style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>{s.userId?.loginId || s.email || '—'}</td>
+                                                    <td>
+                                                        <button
+                                                            title="View/Reset Student Credentials"
+                                                            onClick={() => handleRegenCred(s._id, s.name)}
+                                                            style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', background: '#fef9c3', color: '#d97706', display: 'flex', alignItems: 'center', gap: 3, fontSize: '.72rem', fontWeight: 600 }}
+                                                        >
+                                                            <Key size={12} />Reset
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Recent Attendance Log + Subjects */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                            <div className="card">
+                                <div className="card-header-row">
+                                    <h2 className="card-title"><ClipboardCheck size={18} />Recent Attendance Log</h2>
+                                    <span className="text-muted-sm">{totalAtt} total</span>
+                                </div>
+                                {recentAtt.length === 0 ? (
+                                    <div className="empty-state-sm">No records yet — create a class above</div>
+                                ) : (
+                                    recentAtt.map((a, i) => (
+                                        <div key={i} className="att-row">
+                                            <div className="att-row-left">
+                                                <Calendar size={13} />
+                                                <span className="att-subject">{a.subject}</span>
+                                                <span className="text-muted-sm">{a.student?.name || '—'}</span>
+                                            </div>
+                                            <span
+                                                className="badge badge-sm"
+                                                style={{ background: STATUS_BG[a.status], color: STATUS_COLORS[a.status] }}
+                                            >{a.status}</span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {Array.isArray(profile.subjects) && profile.subjects.length > 0 && (
+                                <div className="card">
+                                    <h2 className="card-title"><BookOpen size={18} />My Subjects</h2>
+                                    <div className="subjects-grid">
+                                        {profile.subjects.map((s, i) => <div key={i} className="subject-chip subject-chip-green">{s}</div>)}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ═══════════ MY DETAILS TAB ═══════════ */}
+            {activeTab === 'details' && (
+                <div className="std-details-grid">
+
+                    {/* 👤 Base Info */}
+                    <DetailCard icon={User} title="Professional & Personal Info" color="#4f46e5">
+                        <div className="detail-grid">
+                            <DetailRow label="Full Name" value={profile.name} />
+                            <DetailRow label="Teacher ID" value={profile.employeeId} />
+                            <DetailRow label="Branch" value={profile.branch?.name} />
+                            <DetailRow label="Subject" value={profile.subjects?.join(', ')} />
+                            <DetailRow label="Class" value={profile.className} />
+                            <DetailRow label="Gender" value={profile.gender} />
+                            <DetailRow label="Date of Birth" value={profile.dob ? new Date(profile.dob).toLocaleDateString() : null} />
+                            <DetailRow label="Father's Name" value={profile.fatherName} />
+                            <DetailRow label="Mother's Name" value={profile.motherName} />
+                            <DetailRow label="Marital Status" value={profile.maritalStatus} />
+                            <DetailRow label="Contract Type" value={profile.contractType} />
+                            <DetailRow label="Shift" value={profile.shift} />
+                            <DetailRow label="Work Location" value={profile.workLocation} />
+                            <DetailRow label="Join Date" value={profile.joiningDate ? new Date(profile.joiningDate).toLocaleDateString() : null} />
+                            <DetailRow label="Phone Number" value={profile.phone} />
+                            <DetailRow label="Email" value={profile.email} />
+                            <DetailRow label="Experience" value={profile.experience} />
+                            <DetailRow label="Qualification" value={profile.qualification} />
+                            <DetailRow label="Salary" value={profile.salary != null && profile.salary !== 0 ? `₹${profile.salary}` : null} />
+                        </div>
+                    </DetailCard>
+
+                    {/* ❤️ Medical Details */}
+                    <DetailCard icon={Heart} title="Medical Details" color="#dc2626">
+                        <div className="detail-grid">
+                            <DetailRow label="Blood Group" value={profile.bloodGroup} />
+                            <DetailRow label="Height" value={profile.height} />
+                            <DetailRow label="Weight" value={profile.weight} />
+                        </div>
+                    </DetailCard>
+
+                    {/* 🏦 Bank Details */}
+                    <DetailCard icon={Landmark} title="Bank Details" color="#059669">
+                        <div className="detail-grid">
+                            <DetailRow label="Bank Account Number" value={profile.bankAccountNo} />
+                            <DetailRow label="Bank Name" value={profile.bankName} />
+                            <DetailRow label="IFSC Code" value={profile.ifscCode} />
+                            <DetailRow label="National ID" value={profile.nationalId} />
+                        </div>
+                    </DetailCard>
+
+                    {/* 📄 Documents */}
+                    <DetailCard icon={FileText} title="Documents" color="#d97706">
+                        <div className="detail-grid">
+                            <DetailRow label="Document Name" value={profile.docName} />
+                        </div>
+                    </DetailCard>
+
+                    {/* 🏫 Previous School Details */}
+                    <DetailCard icon={School} title="Previous School" color="#7c3aed">
+                        <div className="detail-grid">
+                            <DetailRow label="School Name" value={profile.prevSchoolName} />
+                            <DetailRow label="Address" value={profile.prevSchoolAddress} />
+                        </div>
+                    </DetailCard>
+
+                    {/* 🏠 Address */}
+                    <DetailCard icon={Home} title="Address" color="#0891b2">
+                        <div className="detail-grid">
+                            <DetailRow label="Current Address" value={profile.currentAddress} />
+                            <DetailRow label="Permanent Address" value={profile.permanentAddress} />
+                        </div>
+                    </DetailCard>
+
+                    {/* 💬 Teacher Details & Socials */}
+                    <DetailCard icon={Briefcase} title="Teacher Details" color="#4f46e5">
+                        <div className="detail-grid">
+                            <DetailRow label="Teacher Details" value={profile.teacherDetails} />
+                            <DetailRow label="Facebook" value={profile.facebook} />
+                            <DetailRow label="LinkedIn" value={profile.linkedin} />
+                            <DetailRow label="Instagram" value={profile.instagram} />
+                            <DetailRow label="YouTube" value={profile.youtube} />
+                        </div>
+                    </DetailCard>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

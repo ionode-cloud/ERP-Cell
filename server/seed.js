@@ -299,7 +299,17 @@ const seed = async () => {
         name: 'Dr. Suresh Patel', email: 'suresh.patel@gmail.com',
         phone: '9876500001', employeeId: 'EMP001', branch: cse._id,
         subjects: ['Data Structures', 'Algorithms'],
-        qualification: 'PhD CS', experience: 10, salary: 75000, userId: tUser._id
+        className: 'CS-4A',
+        qualification: 'PhD in Computer Science', experience: '10 Years', salary: 75000,
+        joiningDate: new Date('2018-07-15'), contractType: 'Permanent', shift: 'Morning Shift', workLocation: 'Main Campus, Building B',
+        teacherDetails: 'Specializes in Advanced Algorithms. Head of the Programming Club.',
+        gender: 'Male', dob: new Date('1982-04-12'), fatherName: 'Ramesh Patel', motherName: 'Kamala Patel', maritalStatus: 'Married',
+        bloodGroup: 'B+', height: '175', weight: '70',
+        bankAccountNo: '987654321000', bankName: 'HDFC Bank', ifscCode: 'HDFC0001234', nationalId: 'IND987654321',
+        docName: 'Aadhar & PAN', prevSchoolName: 'XYZ Institute of Technology', prevSchoolAddress: 'MG Road, Bangalore',
+        currentAddress: 'A-45, Staff Quarters, College Campus', permanentAddress: '15 Gandhi Marg, Ahmedabad', address: 'A-45, Staff Quarters, College Campus',
+        facebook: 'suresh.patel', linkedin: 'in/suresh-patel-cs', instagram: 'suresh_codes', youtube: 'CSwithSuresh',
+        userId: tUser._id
     });
     tUser.refId = teacher._id;
     await tUser.save();

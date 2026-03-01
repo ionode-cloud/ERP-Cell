@@ -2604,3 +2604,386 @@ h3 {
   border-radius: 4px;
   font-size: .75rem;
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/*                 DASHBOARD PROFILES & TABS                   */
+/* ═══════════════════════════════════════════════════════════ */
+
+.std-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border-radius: var(--radius);
+  padding: 2rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+.std-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.std-profile-info {
+  flex: 1;
+}
+
+.std-profile-info h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.std-profile-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  opacity: 0.9;
+  flex-wrap: wrap;
+}
+
+.divider {
+  opacity: 0.5;
+}
+
+.std-profile-meta {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1.15rem 1.4rem;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  min-width: 200px;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.meta-label {
+  opacity: 0.8;
+}
+
+.meta-value {
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Tabs */
+.std-tab-nav {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.std-tab-btn {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+
+.std-tab-btn:hover {
+  color: var(--primary);
+}
+
+.std-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Grids */
+.std-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.std-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.std-stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.std-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.std-stat-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: .1rem;
+}
+
+.std-stat-sub {
+  font-size: .75rem;
+  color: var(--text-muted);
+  margin-top: .1rem;
+}
+
+.std-two-col {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.std-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Detail UI Helpers */
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detail-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  flex: 1;
+}
+
+.detail-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  flex: 2;
+  text-align: right;
+  word-wrap: break-word;
+}
+
+.fee-summary-grid {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.fee-card {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.fee-card-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.fee-card-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.fee-total .fee-card-amount {
+  color: #1e40af;
+}
+
+.fee-paid .fee-card-amount {
+  color: #059669;
+}
+
+.fee-balance .fee-card-amount {
+  color: #d97706;
+}
+
+.progress-section {
+  background: var(--bg);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar-bg {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+}
+
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mini-table th {
+  text-align: left;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-table td {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-table tr:last-child td {
+  border-bottom: none;
+}
+
+.att-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.att-pill {
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.att-present {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #34d399;
+}
+
+.att-absent {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #f87171;
+}
+
+.att-late {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #facc15;
+}
+
+.att-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.att-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.att-recent .att-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.att-recent .att-row:last-child {
+  border-bottom: none;
+}
+
+.att-row-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.att-subject {
+  font-weight: 600;
+}
+
+.subjects-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.subject-chip {
+  background: #f1f5f9;
+  color: #334155;
+  padding: 0.35rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid #cbd5e1;
+}
+
+.subject-chip-green {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #34d399;
+}

@@ -54,7 +54,17 @@ const getMyProfile = async (req, res) => {
 // @desc  Create teacher — email becomes loginId
 const createTeacher = async (req, res) => {
     try {
-        const { name, email, phone, employeeId, branch, subjects, qualification, experience, gender, salary, address } = req.body;
+        const {
+            name, email, phone, employeeId, branch, subjects, className, qualification, experience, salary,
+            joiningDate, contractType, shift, workLocation, teacherDetails,
+            gender, dob, fatherName, motherName, maritalStatus, photoUrl,
+            bloodGroup, height, weight,
+            bankAccountNo, bankName, ifscCode, nationalId,
+            docName, docUrl,
+            prevSchoolName, prevSchoolAddress,
+            currentAddress, permanentAddress, address,
+            facebook, linkedin, instagram, youtube
+        } = req.body;
         if (!email) return res.status(400).json({ success: false, message: 'Email is required (used as login ID)' });
 
         const existing = await Teacher.findOne({ $or: [{ email }, { employeeId }] });
@@ -66,7 +76,18 @@ const createTeacher = async (req, res) => {
         const plainPassword = generatePassword(name, employeeId || name.split(' ')[0].toLowerCase());
         const user = await User.create({ name, loginId: email, password: plainPassword, role: 'teacher' });
 
-        const teacher = await Teacher.create({ name, email, phone, employeeId, branch, subjects, qualification, experience, gender, salary, address, userId: user._id });
+        const teacher = await Teacher.create({
+            name, email, phone, employeeId, branch, subjects, className, qualification, experience, salary,
+            joiningDate, contractType, shift, workLocation, teacherDetails,
+            gender, dob, fatherName, motherName, maritalStatus, photoUrl,
+            bloodGroup, height, weight,
+            bankAccountNo, bankName, ifscCode, nationalId,
+            docName, docUrl,
+            prevSchoolName, prevSchoolAddress,
+            currentAddress, permanentAddress, address,
+            facebook, linkedin, instagram, youtube,
+            userId: user._id
+        });
         user.refId = teacher._id;
         await user.save();
 

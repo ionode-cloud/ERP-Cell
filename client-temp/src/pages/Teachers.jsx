@@ -1,19 +1,284 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
-import { Plus, Search, Edit2, Trash2, Key, X, Copy, CheckCircle } from 'lucide-react';
+import {
+    Plus, Search, Edit2, Trash2, Key, X, Copy, CheckCircle,
+    User, Users, Heart, Landmark, School, Home, Building2,
+    FileText, Lock, Upload, ArrowLeft, Save, Briefcase
+} from 'lucide-react';
 
-const emptyForm = { name: '', email: '', phone: '', gender: '', employeeId: '', branch: '', subjects: '', qualification: '', experience: '', salary: '', address: '' };
+/* ─── Default form state ────────────────────────────────────── */
+const emptyForm = {
+    employeeId: '', name: '', branch: '', subjects: '', className: '',
+    gender: '', dob: '', fatherName: '', motherName: '', maritalStatus: '',
+    contractType: '', shift: '', workLocation: '', joiningDate: '',
+    phone: '', email: '', experience: '', qualification: '', photoUrl: '',
+    bloodGroup: '', height: '', weight: '',
+    bankAccountNo: '', bankName: '', ifscCode: '', nationalId: '',
+    docName: '', docUrl: '',
+    prevSchoolName: '', prevSchoolAddress: '',
+    currentAddress: '', permanentAddress: '', address: '',
+    teacherDetails: '', facebook: '', linkedin: '', instagram: '', youtube: '',
+    salary: ''
+};
 
+const teacherToForm = (t) => ({
+    employeeId: t.employeeId || '', name: t.name || '', branch: t.branch?._id || t.branch || '',
+    subjects: Array.isArray(t.subjects) ? t.subjects[0] || '' : t.subjects || '',
+    className: t.className || '',
+    gender: t.gender || '', dob: t.dob ? t.dob.split('T')[0] : '',
+    fatherName: t.fatherName || '', motherName: t.motherName || '', maritalStatus: t.maritalStatus || '',
+    contractType: t.contractType || '', shift: t.shift || '', workLocation: t.workLocation || '',
+    joiningDate: t.joiningDate ? t.joiningDate.split('T')[0] : '',
+    phone: t.phone || '', email: t.email || '', experience: t.experience || '',
+    qualification: t.qualification || '', photoUrl: t.photoUrl || '',
+    bloodGroup: t.bloodGroup || '', height: t.height || '', weight: t.weight || '',
+    bankAccountNo: t.bankAccountNo || '', bankName: t.bankName || '', ifscCode: t.ifscCode || '', nationalId: t.nationalId || '',
+    docName: t.docName || '', docUrl: t.docUrl || '',
+    prevSchoolName: t.prevSchoolName || '', prevSchoolAddress: t.prevSchoolAddress || '',
+    currentAddress: t.currentAddress || '', permanentAddress: t.permanentAddress || '', address: t.address || '',
+    teacherDetails: t.teacherDetails || '', facebook: t.facebook || '', linkedin: t.linkedin || '', instagram: t.instagram || '', youtube: t.youtube || '',
+    salary: t.salary || ''
+});
+
+/* ─── Section header ────────────────────────────────────────── */
+function SectionHeader({ icon: Icon, title, color = '#4f46e5' }) {
+    return (
+        <div className="add-student-section-header">
+            <div className="add-student-section-icon" style={{ background: color + '18', color }}>
+                <Icon size={18} />
+            </div>
+            <h3 className="add-student-section-title">{title}</h3>
+        </div>
+    );
+}
+
+/* ─── File drop zone ────────────────────────────────────────── */
+function FileDropZone({ label, current, onChange }) {
+    const [file, setFile] = useState(current || null);
+    const handleFile = (f) => {
+        if (!f) return;
+        setFile(f.name);
+        if (onChange) onChange(f.name);
+    };
+    return (
+        <div
+            className="file-dropzone"
+            onClick={() => document.getElementById('fz-' + label)?.click()}
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
+        >
+            <input id={'fz-' + label} type="file" style={{ display: 'none' }} onChange={e => handleFile(e.target.files[0])} />
+            {file ? (
+                <div className="file-dropzone-selected"><CheckCircle size={18} color="#059669" /><span>{file}</span></div>
+            ) : (
+                <><Upload size={22} /><p>Drag &amp; drop a file here or <span>click</span></p></>
+            )}
+        </div>
+    );
+}
+
+
+/* ═══════════════════════════════════════════════════════════ */
+/*            SHARED TEACHER FULL FORM (Add + Edit)            */
+/* ═══════════════════════════════════════════════════════════ */
+function TeacherFullForm({ branches, initialForm = emptyForm, isEdit = false, onSuccess, onCancel }) {
+    const [form, setForm] = useState(initialForm);
+    const [saving, setSaving] = useState(false);
+    const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
+
+    const selectedBranch = branches.find(b => b._id === form.branch);
+    const branchSubjects = selectedBranch?.subjects || [];
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            const payload = { ...form, subjects: form.subjects ? [form.subjects] : [] };
+            if (isEdit) {
+                await api.put(`/teachers/${isEdit}`, payload);
+                toast.success('Teacher updated successfully!');
+                onSuccess(null);
+            } else {
+                const res = await api.post('/teachers', payload);
+                toast.success('Teacher added successfully!');
+                onSuccess(res.data.credentials);
+            }
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Error saving teacher');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <div className="add-student-page">
+            <div className="add-student-topbar">
+                <button className="btn-secondary btn-sm" onClick={onCancel} type="button">
+                    <ArrowLeft size={16} /> Back
+                </button>
+                <h2 className="add-student-topbar-title">
+                    {isEdit ? 'Edit Teacher Details' : 'Add New Teacher'}
+                </h2>
+                <div />
+            </div>
+
+            <form onSubmit={handleSubmit} className="add-student-form">
+                {/* ── 1. Professional & Personal Info ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={Briefcase} title="Professional & Personal Info" color="#4f46e5" />
+                    <div className="form-grid-3">
+                        <div className="form-group"><label>Teacher ID *</label><input type="text" placeholder="Enter Teacher ID" value={form.employeeId} onChange={set('employeeId')} required /></div>
+                        <div className="form-group"><label>Full Name *</label><input type="text" placeholder="Enter your Full Name" value={form.name} onChange={set('name')} required /></div>
+
+                        <div className="form-group">
+                            <label>Branch</label>
+                            <select value={form.branch} onChange={e => setForm({ ...form, branch: e.target.value, subjects: '' })}>
+                                <option value="">Select Branch</option>
+                                {branches.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Subject</label>
+                            <select value={form.subjects} onChange={set('subjects')}>
+                                <option value="">Select Subject</option>
+                                {branchSubjects.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
+
+                        <div className="form-group"><label>Class</label><input type="text" placeholder="Enter Class (e.g. 1 (A))" value={form.className} onChange={set('className')} /></div>
+                        <div className="form-group"><label>Gender</label><input type="text" placeholder="Enter gender" value={form.gender} onChange={set('gender')} /></div>
+                        <div className="form-group"><label>Date Of Birth *</label><input type="date" value={form.dob} onChange={set('dob')} required /></div>
+
+                        <div className="form-group"><label>Fathers Name</label><input type="text" placeholder="Enter Fathers Name" value={form.fatherName} onChange={set('fatherName')} /></div>
+                        <div className="form-group"><label>Mothers Name</label><input type="text" placeholder="Enter mothers Name" value={form.motherName} onChange={set('motherName')} /></div>
+                        <div className="form-group"><label>Marital Status</label><input type="text" placeholder="Enter marital status" value={form.maritalStatus} onChange={set('maritalStatus')} /></div>
+
+                        <div className="form-group"><label>Contract Type</label><input type="text" placeholder="Enter contract type" value={form.contractType} onChange={set('contractType')} /></div>
+                        <div className="form-group"><label>Shift</label><input type="text" placeholder="Enter shift" value={form.shift} onChange={set('shift')} /></div>
+                        <div className="form-group"><label>Work Location</label><input type="text" placeholder="Enter work location" value={form.workLocation} onChange={set('workLocation')} /></div>
+                        <div className="form-group"><label>Join Date</label><input type="date" value={form.joiningDate} onChange={set('joiningDate')} /></div>
+
+                        <div className="form-group"><label>Phone Number *</label><input type="text" placeholder="Enter your Phone Number" value={form.phone} onChange={set('phone')} required /></div>
+                        <div className="form-group"><label>Email *</label><input type="email" placeholder="Enter your Email" value={form.email} onChange={set('email')} required disabled={!!isEdit} /></div>
+
+                        <div className="form-group"><label>Experience *</label><input type="text" placeholder="Enter experience" value={form.experience} onChange={set('experience')} required /></div>
+                        <div className="form-group"><label>Qualification</label><input type="text" placeholder="Enter Qualification" value={form.qualification} onChange={set('qualification')} /></div>
+
+                        <div className="form-group"><label>Salary (₹)</label><input type="number" placeholder="Enter salary" value={form.salary} onChange={set('salary')} /></div>
+
+                        <div className="form-group form-col-span-2">
+                            <label>Teacher Photo *</label>
+                            <FileDropZone label="teacher-photo" current={form.photoUrl} onChange={v => setForm({ ...form, photoUrl: v })} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── 2. Medical Details ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={Heart} title="Medical Details" color="#dc2626" />
+                    <div className="form-grid-3">
+                        <div className="form-group"><label>Blood Group</label><input type="text" placeholder="Enter blood group" value={form.bloodGroup} onChange={set('bloodGroup')} /></div>
+                        <div className="form-group"><label>Height</label><input type="text" placeholder="Enter height" value={form.height} onChange={set('height')} /></div>
+                        <div className="form-group"><label>Weight</label><input type="text" placeholder="Enter Weight" value={form.weight} onChange={set('weight')} /></div>
+                    </div>
+                </div>
+
+                {/* ── 3. Bank Details ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={Landmark} title="Bank Details" color="#059669" />
+                    <div className="form-grid-3">
+                        <div className="form-group"><label>Bank Account Number</label><input type="text" placeholder="Enter bank account number" value={form.bankAccountNo} onChange={set('bankAccountNo')} /></div>
+                        <div className="form-group"><label>Bank Name</label><input type="text" placeholder="Enter bank name" value={form.bankName} onChange={set('bankName')} /></div>
+                        <div className="form-group"><label>IFSC Code</label><input type="text" placeholder="Enter IFSC Code" value={form.ifscCode} onChange={set('ifscCode')} /></div>
+                        <div className="form-group"><label>National Identification Number</label><input type="text" placeholder="Enter national identification number" value={form.nationalId} onChange={set('nationalId')} /></div>
+                    </div>
+                </div>
+
+                {/* ── 4. Upload Documents ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={FileText} title="Upload Documents" color="#d97706" />
+                    <div className="form-grid-2">
+                        <div className="form-group"><label>Doc Name</label><input type="text" placeholder="Enter Doc Name" value={form.docName} onChange={set('docName')} /></div>
+                        <div className="form-group">
+                            <label>Upload File</label>
+                            <FileDropZone label="doc-file" current={form.docUrl} onChange={v => setForm({ ...form, docUrl: v })} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── 5. Previous School Details ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={School} title="Previous School Details" color="#7c3aed" />
+                    <div className="form-grid-3">
+                        <div className="form-group"><label>School Name</label><input type="text" placeholder="Enter School Name" value={form.prevSchoolName} onChange={set('prevSchoolName')} /></div>
+                        <div className="form-group form-col-span-2"><label>Address</label><textarea placeholder="Enter Address" value={form.prevSchoolAddress} onChange={set('prevSchoolAddress')} rows={2} /></div>
+                    </div>
+                </div>
+
+                {/* ── 6. Address ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={Home} title="Address" color="#0891b2" />
+                    <div className="form-grid-2">
+                        <div className="form-group"><label>Current Address</label><textarea placeholder="Enter Current Address" value={form.currentAddress} onChange={set('currentAddress')} rows={3} /></div>
+                        <div className="form-group"><label>Permanent Address</label><textarea placeholder="Enter Permanent Address" value={form.permanentAddress} onChange={set('permanentAddress')} rows={3} /></div>
+                    </div>
+                </div>
+
+                {/* ── 7. Teacher Details & Socials ─── */}
+                <div className="add-student-card">
+                    <SectionHeader icon={User} title="Teacher Details" color="#3b82f6" />
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                        <label>Teacher Details</label>
+                        <textarea placeholder="Enter details" value={form.teacherDetails} onChange={set('teacherDetails')} rows={3} />
+                    </div>
+                    <div className="form-grid-2">
+                        <div className="form-group"><label>Facebook</label><input type="text" placeholder="Enter your facebook link" value={form.facebook} onChange={set('facebook')} /></div>
+                        <div className="form-group"><label>LinkedIn</label><input type="text" placeholder="Enter your LinkedIn link" value={form.linkedin} onChange={set('linkedin')} /></div>
+                        <div className="form-group"><label>Instagram</label><input type="text" placeholder="Enter your Instagram link" value={form.instagram} onChange={set('instagram')} /></div>
+                        <div className="form-group"><label>YouTube</label><input type="text" placeholder="Enter your YouTube link" value={form.youtube} onChange={set('youtube')} /></div>
+                    </div>
+                </div>
+
+                {/* ── 8. Login Details (add only) ─── */}
+                {!isEdit && (
+                    <div className="add-student-card">
+                        <SectionHeader icon={Lock} title="Login Details" color="#1d4ed8" />
+                        <div className="form-grid-2">
+                            <div className="form-group">
+                                <label>Email *</label>
+                                <input type="email" placeholder="Enter Email" value={form.email} onChange={set('email')} required disabled={!!isEdit} />
+                            </div>
+                            <div className="form-group">
+                                <label>Password *</label>
+                                <input type="text" value={form.name && form.employeeId ? `${form.name.split(' ')[0].toLowerCase()}@${form.employeeId}` : ''} readOnly placeholder="Auto-generated" style={{ background: '#f8fafc', color: '#64748b' }} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Submit */}
+                <div className="add-student-submit-bar">
+                    <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+                    <button type="submit" className="btn-primary" disabled={saving}>
+                        {saving ? <><span className="spinner" /> Saving...</> : isEdit ? <><Save size={18} /> Update Teacher</> : <><Plus size={18} /> Add Teacher</>}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*                  MAIN TEACHERS PAGE                         */
+/* ═══════════════════════════════════════════════════════════ */
 export default function Teachers() {
     const [teachers, setTeachers] = useState([]);
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [modal, setModal] = useState(false);
-    const [editId, setEditId] = useState(null);
-    const [form, setForm] = useState(emptyForm);
-    const [saving, setSaving] = useState(false);
+    const [view, setView] = useState('list');
+    const [editTeacher, setEditTeacher] = useState(null);
     const [credentials, setCredentials] = useState(null);
     const [copied, setCopied] = useState('');
 
@@ -28,33 +293,13 @@ export default function Teachers() {
 
     useEffect(() => { fetchAll(); }, []);
 
-    const openAdd = () => { setEditId(null); setForm(emptyForm); setModal(true); };
-    const openEdit = (t) => { setEditId(t._id); setForm({ ...t, branch: t.branch?._id || t.branch, subjects: Array.isArray(t.subjects) ? t.subjects.join(', ') : t.subjects }); setModal(true); };
-    const closeModal = () => { setModal(false); setEditId(null); setForm(emptyForm); };
+    const openAdd = () => { setEditTeacher(null); setView('add'); };
+    const openEdit = (t) => { setEditTeacher(t); setView('edit'); };
 
     const copyText = (text, key) => {
         navigator.clipboard.writeText(text);
         setCopied(key);
         setTimeout(() => setCopied(''), 2000);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault(); setSaving(true);
-        try {
-            const payload = { ...form, subjects: form.subjects ? form.subjects.split(',').map(s => s.trim()) : [] };
-            if (editId) {
-                await api.put(`/teachers/${editId}`, payload);
-                toast.success('Teacher updated');
-                closeModal(); fetchAll();
-            } else {
-                const res = await api.post('/teachers', payload);
-                toast.success('Teacher added!');
-                closeModal();
-                setCredentials(res.data.credentials);
-                fetchAll();
-            }
-        } catch (err) { toast.error(err?.response?.data?.message || 'Error saving'); }
-        finally { setSaving(false); }
     };
 
     const handleDelete = async (id) => {
@@ -75,6 +320,32 @@ export default function Teachers() {
         t.email?.toLowerCase().includes(search.toLowerCase()) ||
         t.employeeId?.toLowerCase().includes(search.toLowerCase())
     );
+
+    /* ── Add teacher view ─── */
+    if (view === 'add') {
+        return (
+            <TeacherFullForm
+                branches={branches}
+                initialForm={emptyForm}
+                isEdit={false}
+                onSuccess={(creds) => { setView('list'); if (creds) setCredentials(creds); fetchAll(); }}
+                onCancel={() => setView('list')}
+            />
+        );
+    }
+
+    /* ── Edit teacher view ─── */
+    if (view === 'edit' && editTeacher) {
+        return (
+            <TeacherFullForm
+                branches={branches}
+                initialForm={teacherToForm(editTeacher)}
+                isEdit={editTeacher._id}
+                onSuccess={() => { setView('list'); fetchAll(); }}
+                onCancel={() => setView('list')}
+            />
+        );
+    }
 
     return (
         <div className="page">
@@ -114,54 +385,6 @@ export default function Teachers() {
                     </div>
                 )}
             </div>
-
-            {/* Add/Edit Modal */}
-            {modal && (
-                <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal" onClick={e => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>{editId ? 'Edit Teacher' : 'Add New Teacher'}</h2>
-                            <button className="modal-close" onClick={closeModal}><X size={20} /></button>
-                        </div>
-                        {!editId && (
-                            <div className="modal-info-banner">
-                                📧 The teacher's <strong>email</strong> will be their <strong>Login ID</strong>. Password is auto-generated as <code>firstname@employeeId</code>
-                            </div>
-                        )}
-                        <form onSubmit={handleSubmit} className="modal-form">
-                            <div className="form-grid">
-                                <div className="form-group"><label>Full Name *</label><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required /></div>
-                                <div className="form-group"><label>Email (Login ID) *</label><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required disabled={!!editId} placeholder="e.g. suresh@gmail.com" /></div>
-                                <div className="form-group"><label>Phone</label><input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
-                                <div className="form-group"><label>Employee ID *</label><input value={form.employeeId} onChange={e => setForm({ ...form, employeeId: e.target.value })} required /></div>
-                                <div className="form-group"><label>Branch</label>
-                                    <select value={form.branch} onChange={e => setForm({ ...form, branch: e.target.value })}>
-                                        <option value="">Select Branch</option>
-                                        {branches.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
-                                    </select>
-                                </div>
-                                <div className="form-group"><label>Subjects (comma separated)</label><input value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} placeholder="e.g. Maths, Physics" /></div>
-                                <div className="form-group"><label>Qualification</label><input value={form.qualification} onChange={e => setForm({ ...form, qualification: e.target.value })} /></div>
-                                <div className="form-group"><label>Experience (years)</label><input type="number" value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })} /></div>
-                                <div className="form-group"><label>Gender</label>
-                                    <select value={form.gender} onChange={e => setForm({ ...form, gender: e.target.value })}>
-                                        <option value="">Select</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div className="form-group"><label>Salary (₹)</label><input type="number" value={form.salary} onChange={e => setForm({ ...form, salary: e.target.value })} /></div>
-                                <div className="form-group form-full"><label>Address</label><textarea value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} rows={2} /></div>
-                            </div>
-                            <div className="modal-actions">
-                                <button type="button" className="btn-secondary" onClick={closeModal}>Cancel</button>
-                                <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Saving...' : (editId ? 'Update Teacher' : 'Add Teacher')}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
 
             {/* Credential Reveal Modal */}
             {credentials && (

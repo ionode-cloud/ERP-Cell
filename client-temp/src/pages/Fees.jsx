@@ -15,6 +15,10 @@ export default function Fees() {
     const [payForm, setPayForm] = useState({ branchId: '', amount: '', method: 'Cash', remarks: '' });
     const [saving, setSaving] = useState(false);
 
+    // Student payment modal
+    const [studentPayModal, setStudentPayModal] = useState(false);
+    const [studentPayForm, setStudentPayForm] = useState({ rollNo: '', name: '', amount: '', method: 'Cash', remarks: '' });
+
     // Alert modal
     const [alertModal, setAlertModal] = useState(false);
     const [alertBranch, setAlertBranch] = useState('');
@@ -54,6 +58,28 @@ export default function Fees() {
             toast.success(res.data.message || 'Payment applied');
             setPayModal(false);
             setPayForm({ branchId: '', amount: '', method: 'Cash', remarks: '' });
+            fetchFees();
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Payment failed');
+        } finally { setSaving(false); }
+    };
+
+    // ── Student-level payment ──
+    const handleStudentPayment = async (e) => {
+        e.preventDefault();
+        if (!studentPayForm.rollNo) return toast.error('Enter Student Roll No');
+        if (!studentPayForm.amount || Number(studentPayForm.amount) <= 0) return toast.error('Enter a valid amount');
+        setSaving(true);
+        try {
+            const res = await api.post('/fees/payment', {
+                rollNo: studentPayForm.rollNo,
+                amount: studentPayForm.amount,
+                method: studentPayForm.method,
+                remarks: studentPayForm.remarks,
+            });
+            toast.success(res.data.message || 'Payment applied');
+            setStudentPayModal(false);
+            setStudentPayForm({ rollNo: '', name: '', amount: '', method: 'Cash', remarks: '' });
             fetchFees();
         } catch (err) {
             toast.error(err?.response?.data?.message || 'Payment failed');
@@ -102,6 +128,9 @@ export default function Fees() {
                 <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
                     <button className="btn-secondary" style={{ borderColor: '#f59e0b', color: '#d97706' }} onClick={() => { setAlertModal(true); setAlertResult(null); }}>
                         <Bell size={16} />Send Alert
+                    </button>
+                    <button className="btn-primary" style={{ background: '#10b981' }} onClick={() => setStudentPayModal(true)}>
+                        <IndianRupee size={16} />Submit Student Fee
                     </button>
                     <button className="btn-primary" onClick={() => setPayModal(true)}>
                         <Plus size={16} />Add Branch Payment
@@ -226,6 +255,51 @@ export default function Fees() {
                                 <div className="modal-actions">
                                     <button type="button" className="btn-secondary" onClick={() => setPayModal(false)}>Cancel</button>
                                     <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Applying...' : 'Apply to Branch'}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Student Payment Modal ── */}
+            {studentPayModal && (
+                <div className="modal-overlay" onClick={() => setStudentPayModal(false)}>
+                    <div className="modal modal-sm" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2><IndianRupee size={18} style={{ marginRight: 6, verticalAlign: 'middle' }} />Submit Student Fee</h2>
+                            <button className="modal-close" onClick={() => setStudentPayModal(false)}><X size={20} /></button>
+                        </div>
+                        <div className="modal-form">
+                            <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                                Record a fee payment for an individual student.
+                            </p>
+                            <form onSubmit={handleStudentPayment} style={{ display: 'flex', flexDirection: 'column', gap: '.85rem' }}>
+                                <div className="form-group">
+                                    <label>Student Name (Optional)</label>
+                                    <input value={studentPayForm.name} onChange={e => setStudentPayForm({ ...studentPayForm, name: e.target.value })} placeholder="e.g. Rahul Sharma" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Roll No *</label>
+                                    <input value={studentPayForm.rollNo} onChange={e => setStudentPayForm({ ...studentPayForm, rollNo: e.target.value })} required placeholder="e.g. CSE001" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Amount (₹) *</label>
+                                    <input type="number" min="1" value={studentPayForm.amount} onChange={e => setStudentPayForm({ ...studentPayForm, amount: e.target.value })} required placeholder="e.g. 5000" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Payment Method</label>
+                                    <select value={studentPayForm.method} onChange={e => setStudentPayForm({ ...studentPayForm, method: e.target.value })}>
+                                        {['Cash', 'Online', 'Cheque', 'Bank Transfer'].map(m => <option key={m} value={m}>{m}</option>)}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Remarks</label>
+                                    <input value={studentPayForm.remarks} onChange={e => setStudentPayForm({ ...studentPayForm, remarks: e.target.value })} placeholder="e.g. Semester 2 fees" />
+                                </div>
+                                <div className="modal-actions">
+                                    <button type="button" className="btn-secondary" onClick={() => setStudentPayModal(false)}>Cancel</button>
+                                    <button type="submit" className="btn-primary" style={{ background: '#10b981' }} disabled={saving}>{saving ? 'Applying...' : 'Submit Fee'}</button>
                                 </div>
                             </form>
                         </div>

@@ -18,8 +18,8 @@ export default function MyFees() {
     if (!fee) return <div className="page"><div className="empty-state">No fee record found.</div></div>;
 
     const paid = fee.paidAmount || 0;
-    const total = fee.totalFee || 0;
-    const balance = total - paid;
+    const total = fee.totalAmount || 0;
+    const balance = fee.dueAmount !== undefined ? fee.dueAmount : (total - paid);
     const pct = total > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0;
 
     return (

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://erp-cell-nlh0.onrender.com/api', // Changed from https://erp-cell-nlh0.onrender.com/api
+    baseURL: import.meta.env.MODE === 'development' ? 'http://localhost:5000/api' : 'https://erp-cell-nlh0.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {

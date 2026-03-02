@@ -94,7 +94,7 @@ export default function StudentDashboard() {
 
     const totalFee = fees?.totalAmount || 0;
     const paidFee = fees?.paidAmount || 0;
-    const balanceFee = totalFee - paidFee;
+    const balanceFee = fees?.dueAmount !== undefined ? fees.dueAmount : (totalFee - paidFee);
     const feePercent = totalFee > 0 ? Math.round((paidFee / totalFee) * 100) : 0;
 
     const safeAttendance = Array.isArray(attendance) ? attendance : [];

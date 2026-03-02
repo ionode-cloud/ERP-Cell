@@ -221,7 +221,12 @@ function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted 
             <div className="create-class-header">
                 <div>
                     <h2 className="card-title"><PenLine size={18} />{step === 'form' ? 'Create New Class' : `Marking: ${subject}`}</h2>
-                    {step === 'attendance' && <p className="text-muted-sm" style={{ marginTop: '.25rem' }}>{new Date(date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>}
+                    {step === 'attendance' && (
+                        <p className="text-muted-sm" style={{ marginTop: '.25rem' }}>
+                            {new Date(date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            {startTime && endTime && ` • ${startTime} - ${endTime}`}
+                        </p>
+                    )}
                 </div>
                 <button className="modal-close" onClick={onClose}><X size={20} /></button>
             </div>

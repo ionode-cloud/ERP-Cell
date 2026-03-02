@@ -166,4 +166,4 @@ const getRevenueSummary = async (req, res) => {
     }
 };
 
-module.exports = { getAllFees, getStudentFee, getMyFee, addPayment, addBranchPayment, sendPaymentAlert, getRevenueSummary };
+module.exports = { getAllFees, getStudentFee, getMyFee, addPayment, addBranchFee, sendPaymentAlert, getRevenueSummary };

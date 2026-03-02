@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
@@ -19,7 +20,7 @@ import Marks from './pages/Marks';
 
 function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
-  if (loading) return <div className="page-loading"><div className="spinner-lg" /></div>;
+  if (loading) return <div className="page-loading"><PacmanLoader color="#3ecec9" /></div>;
   if (!user) return <Navigate to="/login" replace />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" replace />;
   return children;

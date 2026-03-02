@@ -69,11 +69,11 @@ const addPayment = async (req, res) => {
     }
 };
 
-// @desc  Record a payment for ALL students in a branch
-// @route POST /api/fees/branch-payment
-const addBranchPayment = async (req, res) => {
+// @desc  Apply an additional fee to ALL students in a branch
+// @route POST /api/fees/branch-add-fee
+const addBranchFee = async (req, res) => {
     try {
-        const { branchId, amount, method, remarks, description } = req.body;
+        const { branchId, amount, remarks } = req.body;
         if (!branchId || !amount) return res.status(400).json({ success: false, message: 'branchId and amount are required' });
 
         // Get all fee records for this branch
@@ -82,16 +82,14 @@ const addBranchPayment = async (req, res) => {
 
         const results = [];
         for (const fee of fees) {
-            fee.payments.push({
-                amount: Number(amount),
-                method: method || 'Cash',
-                remarks: remarks || description || 'Branch payment',
-            });
+            fee.totalAmount = (fee.totalAmount || 0) + Number(amount);
+            // Optionally could store remarks in a new array like `appliedFees` if schema allowed, 
+            // but simply increasing totalAmount works because dueAmount is calculated via pre-save hook.
             const saved = await fee.save();
             results.push(saved);
         }
 
-        res.json({ success: true, message: `Payment of ₹${amount} applied to ${results.length} students`, data: results });
+        res.json({ success: true, message: `Additional fee of ₹${amount} applied to ${results.length} students`, data: results });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

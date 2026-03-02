@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
@@ -86,7 +87,7 @@ export default function Dashboard() {
         fetchData();
     }, [user]);
 
-    if (loading) return <div className="page-loading"><div className="spinner-lg" /></div>;
+    if (loading) return <div className="page-loading"><PacmanLoader color="#3ecec9" /></div>;
     if (user?.role === 'student') return <Navigate to="/student-dashboard" replace />;
     if (user?.role === 'teacher') return <Navigate to="/teacher-dashboard" replace />;
 

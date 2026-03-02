@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -14,7 +15,7 @@ export default function MyFees() {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <div className="page-loading"><div className="spinner-lg" /></div>;
+    if (loading) return <div className="page-loading"><PacmanLoader color="#3ecec9" /></div>;
     if (!fee) return <div className="page"><div className="empty-state">No fee record found.</div></div>;
 
     const paid = fee.paidAmount || 0;

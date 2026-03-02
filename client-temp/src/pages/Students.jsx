@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -340,7 +341,7 @@ function StudentFullForm({ branches, initialForm = emptyForm, isEdit = false, on
                 <div className="add-student-submit-bar">
                     <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
                     <button type="submit" className="btn-primary" disabled={saving}>
-                        {saving ? <><span className="spinner" /> Saving...</> : isEdit ? <><Save size={18} /> Save Changes</> : <><Plus size={18} /> Add Student</>}
+                        {saving ? <><PacmanLoader color="#3ecec9" size={10} /> Saving...</> : isEdit ? <><Save size={18} /> Save Changes</> : <><Plus size={18} /> Add Student</>}
                     </button>
                 </div>
             </form>
@@ -437,7 +438,7 @@ export default function Students() {
                 <div className="table-toolbar">
                     <div className="search-box"><Search size={16} /><input placeholder="Search by name, email, roll no..." value={search} onChange={e => setSearch(e.target.value)} /></div>
                 </div>
-                {loading ? <div className="table-loading"><div className="spinner-lg" /></div> : (
+                {loading ? <div className="table-loading"><PacmanLoader color="#3ecec9" /></div> : (
                     <div className="table-wrapper">
                         <table className="data-table">
                             <thead>

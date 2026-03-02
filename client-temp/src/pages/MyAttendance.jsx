@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -41,7 +42,7 @@ export default function MyAttendance() {
         return <Clock size={18} color="#d97706" />;
     };
 
-    if (loading) return <div className="page-loading"><div className="spinner-lg" /></div>;
+    if (loading) return <div className="page-loading"><PacmanLoader color="#3ecec9" /></div>;
 
     return (
         <div className="page">

@@ -6,7 +6,7 @@ const Teacher = require('../models/Teacher');
 // @route POST /api/attendance/mark
 const markAttendance = async (req, res) => {
     try {
-        const { records, subject, date } = req.body;
+        const { records, subject, date, startTime, endTime } = req.body;
         // records: [{ studentId, status, marks, branch }]
         const teacher = await Teacher.findOne({ userId: req.user._id });
         const attendanceDate = new Date(date);
@@ -16,6 +16,7 @@ const markAttendance = async (req, res) => {
                 { student: r.studentId, subject, date: attendanceDate },
                 {
                     student: r.studentId, subject, date: attendanceDate,
+                    startTime: startTime || '', endTime: endTime || '',
                     status: r.status, branch: r.branch,
                     marks: r.marks !== undefined ? r.marks : null,
                     markedBy: teacher?._id

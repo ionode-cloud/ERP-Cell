@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -48,7 +49,7 @@ export default function Branches() {
                 <button className="btn-primary" onClick={openAdd}><Plus size={18} />Add Branch</button>
             </div>
 
-            {loading ? <div className="page-loading"><div className="spinner-lg" /></div> : (
+            {loading ? <div className="page-loading"><PacmanLoader color="#3ecec9" /></div> : (
                 <div className="branch-grid">
                     {branches.length === 0 && <div className="empty-state">No branches yet. Add one!</div>}
                     {branches.map(b => (

@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -28,9 +29,15 @@ function buildClassHistory(records) {
     records.forEach(r => {
         const dateStr = r.date ? new Date(r.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
         const rawDate = r.date;
-        const key = `${r.date ? new Date(r.date).toISOString().split('T')[0] : ''}||${r.subject}`;
+        const key = `${r.date ? new Date(r.date).toISOString().split('T')[0] : ''}||${r.subject}||${r.startTime || ''}||${r.endTime || ''}`;
         if (!map[key]) {
-            map[key] = { date: dateStr, rawDate, isoDate: r.date ? new Date(r.date).toISOString().split('T')[0] : null, subject: r.subject, present: 0, absent: 0, late: 0, total: 0, studentRows: [] };
+            map[key] = {
+                date: dateStr, rawDate, isoDate: r.date ? new Date(r.date).toISOString().split('T')[0] : null,
+                subject: r.subject,
+                startTime: r.startTime || '',
+                endTime: r.endTime || '',
+                present: 0, absent: 0, late: 0, total: 0, studentRows: []
+            };
         }
         map[key].total++;
         if (r.status === 'Present') map[key].present++;
@@ -131,6 +138,8 @@ function EditSessionPanel({ session, branchId, onClose, onSaved }) {
 function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted }) {
     const [subject, setSubject] = useState(profile.subjects?.[0] || '');
     const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
     const [step, setStep] = useState('form');
     const [rows, setRows] = useState([]);
     const [submitting, setSubmitting] = useState(false);
@@ -144,6 +153,7 @@ function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted 
 
     const startClass = () => {
         if (!subject || !date) { toast.error('Select subject and date'); return; }
+        if (!startTime || !endTime) { toast.error('Select start and end time'); return; }
         setRows(students.map(s => ({ studentId: s._id, name: s.name, rollNo: s.rollNo, status: 'Present', marks: '' })));
         setStep('attendance');
     };
@@ -162,7 +172,7 @@ function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted 
                 branch: branchId,
                 marks: r.marks !== '' ? Number(r.marks) : null,
             }));
-            await api.post('/attendance/mark', { records, subject, date });
+            await api.post('/attendance/mark', { records, subject, date, startTime, endTime });
             toast.success(`Class recorded for ${rows.length} students!`);
             setDone(true);
             onSubmitted?.();
@@ -187,6 +197,7 @@ function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted 
             <CheckCircle size={48} color="#059669" />
             <h3>Class Recorded!</h3>
             <p><strong>{subject}</strong> · {new Date(date).toLocaleDateString()}</p>
+            {startTime && endTime && <p className="text-muted-sm" style={{ marginTop: '.25rem' }}>{startTime} - {endTime}</p>}
             <p className="success-sub">{rows.filter(r => r.status === 'Present').length} Present · {rows.filter(r => r.status === 'Absent').length} Absent · {rows.filter(r => r.status === 'Late').length} Late</p>
             <div style={{ display: 'flex', gap: '.75rem', marginTop: '1.25rem', justifyContent: 'center' }}>
                 <button className="btn-secondary" onClick={onClose}>Close</button>
@@ -230,6 +241,16 @@ function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted 
                             <label>Date</label>
                             <input type="date" value={date} onChange={e => setDate(e.target.value)} max={new Date().toISOString().slice(0, 10)} />
                         </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div className="form-group">
+                                <label>Start Time</label>
+                                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+                            </div>
+                            <div className="form-group">
+                                <label>End Time</label>
+                                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+                            </div>
+                        </div>
                         <div style={{ display: 'flex', gap: '.75rem', marginTop: '.5rem' }}>
                             <button className="btn-secondary" onClick={onClose}>Cancel</button>
                             <button className="btn-primary" onClick={startClass} style={{ flex: 1, justifyContent: 'center' }}>
@@ -271,7 +292,10 @@ function CreateClassPanel({ profile, students, attendance, onClose, onSubmitted 
                                                 </div>
                                                 <div>
                                                     <div style={{ fontWeight: 600, fontSize: '.85rem', color: 'var(--text)' }}>{cls.subject}</div>
-                                                    <div style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>{cls.date}</div>
+                                                    <div style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>
+                                                        {cls.date}
+                                                        {cls.startTime && cls.endTime ? ` • ${cls.startTime} - ${cls.endTime}` : ''}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', gap: '.4rem', alignItems: 'center' }}>
@@ -427,7 +451,7 @@ export default function TeacherDashboard() {
 
     useEffect(() => { fetchAll(); }, []);
 
-    if (loading) return <div className="page-loader"><div className="spinner-lg" /><p>Loading your dashboard...</p></div>;
+    if (loading) return <div className="page-loader"><PacmanLoader color="#3ecec9" /><p>Loading your dashboard...</p></div>;
     if (!profile) return <div className="page"><p style={{ padding: '2rem' }}>Profile not found. Please contact admin.</p></div>;
 
     const recentAtt = [...attendance].slice(0, 8);

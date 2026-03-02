@@ -5,6 +5,8 @@ const attendanceSchema = new mongoose.Schema({
     branch: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true },
     subject: { type: String, required: true },
     date: { type: Date, required: true },
+    startTime: { type: String, default: '' },
+    endTime: { type: String, default: '' },
     status: { type: String, enum: ['Present', 'Absent', 'Late'], default: 'Present' },
     marks: { type: Number, min: 0, max: 100, default: null },
     markedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher' }

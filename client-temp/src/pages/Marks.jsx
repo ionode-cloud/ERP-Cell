@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/useAuth';
@@ -136,7 +137,7 @@ export default function Marks() {
     const uniqueSubjects = [...new Set(existingMarks.map(m => m.subject))];
     const marksHistory = buildMarksHistory(existingMarks);
 
-    if (loading) return <div className="page-loader"><div className="spinner-lg" /><p>Loading...</p></div>;
+    if (loading) return <div className="page-loader"><PacmanLoader color="#3ecec9" /><p>Loading...</p></div>;
 
     return (
         <div className="page">

@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -89,7 +90,7 @@ export default function StudentDashboard() {
         fetchAll();
     }, []);
 
-    if (loading) return <div className="page-loader"><div className="spinner-lg" /><p>Loading your dashboard...</p></div>;
+    if (loading) return <div className="page-loader"><PacmanLoader color="#3ecec9" /><p>Loading your dashboard...</p></div>;
     if (!profile) return <div className="page"><p style={{ padding: '2rem' }}>Profile not found. Please contact admin.</p></div>;
 
     const totalFee = fees?.totalAmount || 0;

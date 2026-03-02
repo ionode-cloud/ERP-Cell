@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -246,7 +247,7 @@ export default function Attendance() {
         { key: 'report', label: '📊 Report' },
     ];
 
-    if (loading) return <div className="page-loading"><div className="spinner-lg" /></div>;
+    if (loading) return <div className="page-loading"><PacmanLoader color="#3ecec9" /></div>;
 
     return (
         <div className="page">
@@ -362,7 +363,7 @@ export default function Attendance() {
                         </select>
                     </div>
 
-                    {histLoading ? <div className="table-loading"><div className="spinner-lg" /></div>
+                    {histLoading ? <div className="table-loading"><PacmanLoader color="#3ecec9" /></div>
                         : sessions.length === 0 ? <div className="empty-state-sm">No class sessions found.</div>
                             : (
                                 <>
@@ -444,7 +445,7 @@ export default function Attendance() {
                         </select>
                     </div>
 
-                    {reportLoading ? <div className="table-loading"><div className="spinner-lg" /></div>
+                    {reportLoading ? <div className="table-loading"><PacmanLoader color="#3ecec9" /></div>
                         : studentStats.length === 0 ? <div className="empty-state-sm">No data found.</div>
                             : (
                                 <>

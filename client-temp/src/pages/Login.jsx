@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
@@ -67,7 +68,7 @@ export default function Login() {
                     </div>
 
                     <button type="submit" className="btn-primary btn-block" disabled={loading}>
-                        {loading ? <span className="spinner" /> : <LogIn size={18} />}
+                        {loading ? <PacmanLoader color="#3ecec9" size={10} /> : <LogIn size={18} />}
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>

@@ -1,3 +1,4 @@
+import { PacmanLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -10,9 +11,9 @@ export default function Fees() {
     const [search, setSearch] = useState('');
     const [filterBranch, setFilterBranch] = useState('');
 
-    // Branch payment modal
+    // Branch add fee modal
     const [payModal, setPayModal] = useState(false);
-    const [payForm, setPayForm] = useState({ branchId: '', amount: '', method: 'Cash', remarks: '' });
+    const [payForm, setPayForm] = useState({ branchId: '', amount: '', remarks: '' });
     const [saving, setSaving] = useState(false);
 
     // Student payment modal
@@ -42,25 +43,24 @@ export default function Fees() {
     useEffect(() => { fetchBranches(); }, []);
     useEffect(() => { setLoading(true); fetchFees(); }, [filterBranch]);
 
-    // ── Branch-level payment ──
+    // ── Apply Branch Fee ──
     const handleBranchPayment = async (e) => {
         e.preventDefault();
         if (!payForm.branchId) return toast.error('Select a branch');
         if (!payForm.amount || Number(payForm.amount) <= 0) return toast.error('Enter a valid amount');
         setSaving(true);
         try {
-            const res = await api.post('/fees/branch-payment', {
+            const res = await api.post('/fees/branch-add-fee', {
                 branchId: payForm.branchId,
                 amount: payForm.amount,
-                method: payForm.method,
                 remarks: payForm.remarks,
             });
-            toast.success(res.data.message || 'Payment applied');
+            toast.success(res.data.message || 'Fee applied successfully');
             setPayModal(false);
-            setPayForm({ branchId: '', amount: '', method: 'Cash', remarks: '' });
+            setPayForm({ branchId: '', amount: '', remarks: '' });
             fetchFees();
         } catch (err) {
-            toast.error(err?.response?.data?.message || 'Payment failed');
+            toast.error(err?.response?.data?.message || 'Fee application failed');
         } finally { setSaving(false); }
     };
 
@@ -133,7 +133,7 @@ export default function Fees() {
                         <IndianRupee size={16} />Submit Student Fee
                     </button>
                     <button className="btn-primary" onClick={() => setPayModal(true)}>
-                        <Plus size={16} />Add Branch Payment
+                        <Plus size={16} />Add Branch Fee
                     </button>
                 </div>
             </div>
@@ -179,7 +179,7 @@ export default function Fees() {
                     </select>
                 </div>
 
-                {loading ? <div className="table-loading"><div className="spinner-lg" /></div> : (
+                {loading ? <div className="table-loading"><PacmanLoader color="#3ecec9" /></div> : (
                     <div className="table-wrapper">
                         <table className="data-table">
                             <thead>
@@ -218,17 +218,17 @@ export default function Fees() {
                 )}
             </div>
 
-            {/* ── Branch Payment Modal ── */}
+            {/* ── Branch Add Fee Modal ── */}
             {payModal && (
                 <div className="modal-overlay" onClick={() => setPayModal(false)}>
                     <div className="modal modal-sm" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2><CreditCard size={18} style={{ marginRight: 6, verticalAlign: 'middle' }} />Branch Payment</h2>
+                            <h2><Plus size={18} style={{ marginRight: 6, verticalAlign: 'middle' }} />Add Branch Fee</h2>
                             <button className="modal-close" onClick={() => setPayModal(false)}><X size={20} /></button>
                         </div>
                         <div className="modal-form">
                             <p style={{ fontSize: '.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                                This will record the same payment amount for <strong>all students</strong> in the selected branch.
+                                This will add an additional fee to the Total Fees of <strong>all students</strong> in the selected branch.
                             </p>
                             <form onSubmit={handleBranchPayment} style={{ display: 'flex', flexDirection: 'column', gap: '.85rem' }}>
                                 <div className="form-group">
@@ -240,17 +240,11 @@ export default function Fees() {
                                 </div>
                                 <div className="form-group">
                                     <label>Amount per Student (₹) *</label>
-                                    <input type="number" min="1" value={payForm.amount} onChange={e => setPayForm({ ...payForm, amount: e.target.value })} required placeholder="e.g. 25000" />
+                                    <input type="number" min="1" value={payForm.amount} onChange={e => setPayForm({ ...payForm, amount: e.target.value })} required placeholder="e.g. 500" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Payment Method</label>
-                                    <select value={payForm.method} onChange={e => setPayForm({ ...payForm, method: e.target.value })}>
-                                        {['Cash', 'Online', 'Cheque', 'Bank Transfer'].map(m => <option key={m} value={m}>{m}</option>)}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Remarks</label>
-                                    <input value={payForm.remarks} onChange={e => setPayForm({ ...payForm, remarks: e.target.value })} placeholder="e.g. Semester 1 fee payment" />
+                                    <label>Remarks / Purpose</label>
+                                    <input value={payForm.remarks} onChange={e => setPayForm({ ...payForm, remarks: e.target.value })} placeholder="e.g. Extra curricular fee" />
                                 </div>
                                 <div className="modal-actions">
                                     <button type="button" className="btn-secondary" onClick={() => setPayModal(false)}>Cancel</button>

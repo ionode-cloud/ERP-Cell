@@ -1,0 +1,54 @@
+College ERP - API Credentials & Integration Guide
+Overview: This document details the backend environment variables, API base URLs, CORS configurations, and the primary integration points for the College ERP MERN stack application.
+1. Deployment & Base URLs
+The application is split between a React frontend and a Node.js/Express backend.
+
+Frontend (Client) URL: https://erp-cell-one.vercel.app (Hosted on Vercel)
+Backend (API) URL: https://erp-cell-nlh0.onrender.com (Hosted on Render)
+Local Backend URL: http://localhost:5000/api
+Local Frontend URL: http://localhost:5173
+2. Environment Variables (.env Configuration)
+The backend requires specific environment variables to connect to the database and sign authentication tokens.
+
+PORT=5000
+MONGODB_URI=mongodb+srv://ionodecloud_db_user:ionodecloud_db_123@ionode.ckcssnb.mongodb.net/college-erp
+JWT_SECRET=8da8e7db20a6197d6738a5a695eb561e33ad4e2d7e43a7ac744b63a84dde9034844e0410dcf35f03524cecfe34976f38524e3107d93a34e25841380f3617771f
+JWT_EXPIRE=7d
+NODE_ENV=development
+3. CORS Configuration
+The server is explicitly configured to only accept requests from the deployed frontend and local development environments to ensure security.
+
+origin: [
+    'https://erp-cell-one.vercel.app',
+    'http://localhost:5173'
+]
+credentials: true
+4. Frontend API Integration (Axios)
+The React frontend utilizes Axios to communicate with the backend. It automatically switches between local and production URLs depending on the environment mode.
+
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: import.meta.env.MODE === 'development'
+        ? 'http://localhost:5000/api'
+        : 'https://erp-cell-nlh0.onrender.com/api',
+});
+
+// Request Interceptor to attach JWT token for secure routes
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+export default api;
+5. API Route Structure
+The backend logic is modularized into dedicated route files. Below are the primary integration endpoints for the frontend:
+
+Auth: /api/auth (Handles Admin, Teacher, and Student logins, generating JWTs.)
+Students: /api/students (CRUD operations for student records and credential generation.)
+Teachers: /api/teachers (CRUD operations for teacher records.)
+Branches: /api/branches (CRUD operations for academic departments.)
+Fees: /api/fees (Fee structures and payment status updates.)
+Attendance: /api/attendance (Logging, updating, and fetching class attendance records.)
+Marks: /api/marks (Student grade tracking and evaluation.)

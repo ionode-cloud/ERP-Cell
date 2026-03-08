@@ -1,0 +1,45 @@
+College ERP - System Workflow & Procedures
+Overview: The College ERP is a comprehensive dual-role management system designed to streamline institutional operations. It handles student records, teacher management, attendance tracking, and fee management across different academic branches. The system is split into three main portals: Admin, Teacher, and Student.
+1. Admin Panel Workflow
+The Admin has the highest level of access in the system. They are responsible for setting up the foundational data (Branches), managing staff (Teachers), and overseeing all operations.
+
+Dashboard: Provides a high-level statistical overview of the entire institution. Admins can view total student enrollments, total teachers, recent activities, overall fee collections, and general attendance metrics.
+Branches:
+Procedure: Admins create and manage academic departments/branches (e.g., Computer Science, Mechanical). This is the first step, as students and teachers must be assigned to a branch.
+Teachers:
+Procedure: Admins add new teaching staff, filling out their professional, personal, bank, and medical details. Admins also assign specific subjects and link the teacher to a specific branch. Credentials (Login ID and Password) are generated and provided to the teacher for system access.
+Students:
+Procedure: Admins enroll new students, assigning them to a specific branch and semester. The registration captures extensive data, including academic history, parent details, and medical info. After registration, the system auto-generates login credentials for the student.
+Fees:
+Procedure: Admins define the fee structure for students and record fee payments status (Paid, Partial, Unpaid). They can view the financial health of the college and track pending dues.
+Attendance:
+Procedure: A global view allowing the admin to monitor attendance logs across all branches and classes to ensure regulatory compliance.
+2. Teacher Dashboard Workflow
+Teachers use the system to manage their daily academic responsibilities, primarily focusing on attendance and student evaluations.
+
+Dashboard & Overview:
+Procedure: Upon logging in, teachers see a summary of their assigned students, their assigned subjects, and a quick log of recently conducted classes. It acts as the command center for daily tasks.
+Create Class / Mark Attendance:
+Procedure: To log a session, the teacher clicks "Create Class", selects the subject, date, and time. The system then loads the list of students in their branch. The teacher can quickly toggle statuses (Present, Absent, Late) and enter marks out of 100 for that specific session. Once submitted, the data is pushed to the central database.
+Marks:
+Procedure: A dedicated module where teachers can update, review, and finalize semester or internal marks for their students.
+Students:
+Procedure: Displays a detailed roster of students assigned to the teacher's branch. If a student forgets their password, the teacher has the authority to regenerate and provide new credentials via the "Reset" button.
+My Details:
+Procedure: Teachers can view their own comprehensive profile logged by the Admin, including bank accounts, medical records, professional experience, and contract details.
+3. Student Dashboard Workflow
+Students have a read-only portal designed to keep them informed about their academic and financial standing.
+
+Dashboard & Overview:
+Procedure: The home screen gives students an immediate snapshot of their academic life. It shows their overall attendance percentage, recent marks, and basic profile info.
+My Details Panel:
+Procedure: A tabbed interface where students can verify all personal data registered with the college. This includes Personal Info, Parent/Guardian details, Medical History, Bank Details, Hostel Address, Previous School records, and uploaded Documents.
+My Fees:
+Procedure: Students can check their current fee status. It displays total fees, amount paid, and any pending dues, serving as a financial reminder.
+My Attendance:
+Procedure: A granular view of the student's attendance. They can see exactly which dates and subjects they were marked Present, Absent, or Late by their respective teachers.
+Summary of the Data Flow
+Setup Phase: Admin creates Branches -> Admin adds Teachers (assigns Branch/Subjects) -> Admin adds Students (assigns Branch).
+Daily Operations: Teacher logs in -> Creates a Class Session -> Marks Attendance and/or Marks.
+Monitoring Phase: Student logs in -> Checks their Updated Attendance, Marks, and Fees.
+Administrative Oversight: Admin continuously monitors aggregate Fees, overall Attendance, and manages any data corrections.

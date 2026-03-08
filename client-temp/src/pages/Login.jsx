@@ -27,52 +27,65 @@ export default function Login() {
 
     return (
         <div className="login-page">
-            <div className="login-card">
-                <div className="login-header">
-                    <div className="login-icon">🎓</div>
-                    <h1>College ERP</h1>
-                    <p>Sign in to continue</p>
+            <div className="login-left">
+                <div className="login-card">
+                    <div className="login-header">
+                        <div className="login-icon">🎓</div>
+                        <h1>College ERP</h1>
+                        <p>Sign in to continue</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="login-form">
+                        <div className="form-group">
+                            <label>Login ID</label>
+                            <div className="input-wrapper">
+                                <User size={18} className="input-icon" />
+                                <input
+                                    type="text"
+                                    placeholder="admin@gmail.com"
+                                    value={form.loginId}
+                                    onChange={e => setForm({ ...form, loginId: e.target.value })}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Password</label>
+                            <div className="input-wrapper">
+                                <Lock size={18} className="input-icon" />
+                                <input
+                                    type={showPw ? 'text' : 'password'}
+                                    placeholder="••••••••"
+                                    value={form.password}
+                                    onChange={e => setForm({ ...form, password: e.target.value })}
+                                    required
+                                />
+                                <button type="button" className="pw-toggle" onClick={() => setShowPw(!showPw)}>
+                                    {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" className="btn-primary btn-block" disabled={loading}>
+                            {loading ? <span className="spinner" /> : <LogIn size={18} />}
+                            {loading ? 'Signing in...' : 'Sign In'}
+                        </button>
+                    </form>
+
+                    <p className="login-hint">Default: admin@gmail.com // admin123</p>
                 </div>
-
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="form-group">
-                        <label>Login ID</label>
-                        <div className="input-wrapper">
-                            <User size={18} className="input-icon" />
-                            <input
-                                type="text"
-                                placeholder="admin@gmail.com"
-                                value={form.loginId}
-                                onChange={e => setForm({ ...form, loginId: e.target.value })}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Password</label>
-                        <div className="input-wrapper">
-                            <Lock size={18} className="input-icon" />
-                            <input
-                                type={showPw ? 'text' : 'password'}
-                                placeholder="••••••••"
-                                value={form.password}
-                                onChange={e => setForm({ ...form, password: e.target.value })}
-                                required
-                            />
-                            <button type="button" className="pw-toggle" onClick={() => setShowPw(!showPw)}>
-                                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-                            </button>
-                        </div>
-                    </div>
-
-                    <button type="submit" className="btn-primary btn-block" disabled={loading}>
-                        {loading ? <span className="spinner" /> : <LogIn size={18} />}
-                        {loading ? 'Signing in...' : 'Sign In'}
-                    </button>
-                </form>
-
-                <p className="login-hint">Default: admin@gmail.com // admin123</p>
+            </div>
+            <div className="login-right">
+                <img 
+                    src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                    alt="University Campus" 
+                    className="login-image"
+                />
+                <div className="login-overlay">
+                    <h2>Welcome to Smart Campus</h2>
+                    <p>Streamline your academic journey with our state-of-the-art College ERP system.</p>
+                </div>
             </div>
         </div>
     );

@@ -683,19 +683,75 @@ h3 {
 .login-page {
   min-height: 100vh;
   display: flex;
+  background: var(--bg);
+}
+
+.login-left {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0891b2 100%);
-  padding: 1rem;
+  padding: 2rem;
+  background: var(--surface);
 }
 
 .login-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 2.5rem;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, .25);
+}
+
+.login-right {
+  flex: 1.2;
+  position: relative;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .login-right {
+    display: flex;
+  }
+}
+
+.login-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.login-right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.8) 0%, rgba(124, 58, 237, 0.8) 50%, rgba(8, 145, 178, 0.8) 100%);
+}
+
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+  color: white;
+}
+
+.login-overlay h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.login-overlay p {
+  font-size: 1.2rem;
+  opacity: 0.95;
+  max-width: 480px;
+  line-height: 1.6;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 .login-header {

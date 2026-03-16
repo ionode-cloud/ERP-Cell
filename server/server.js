@@ -22,6 +22,7 @@ const corsOptions = {
     origin: function (origin, callback) {
         const allowedOrigins = [
             'https://erp-cell-one.vercel.app',
+            'https://erp-cell.ionode.cloud',
             'http://localhost:5173'
         ];
         if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {

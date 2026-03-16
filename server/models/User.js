@@ -3,11 +3,13 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
-    loginId: { type: String, required: true, unique: true, trim: true },
+    loginId: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['admin', 'student', 'teacher'], required: true },
     refId: { type: mongoose.Schema.Types.ObjectId, refPath: 'role' },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
 }, { timestamps: true });
 
 // Hash password before saving

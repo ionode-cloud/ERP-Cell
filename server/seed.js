@@ -18,7 +18,7 @@ const seed = async () => {
     await Fee.deleteMany({});
 
     // ─── Admin ───
-    await User.create({ name: 'Admin', loginId: 'admin@gmail.com', password: 'admin123', role: 'admin' });
+    await User.create({ name: 'Admin', loginId: 'ionodecloud@gmail.com', password: '123456', role: 'admin' });
     console.log('✅ Admin created');
 
     // ─── Branches ───

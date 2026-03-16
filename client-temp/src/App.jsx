@@ -17,6 +17,7 @@ import MyFees from './pages/MyFees';
 import MyAttendance from './pages/MyAttendance';
 import CreateClass from './pages/CreateClass';
 import Marks from './pages/Marks';
+import ResetPassword from './pages/ResetPassword';
 
 function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Route path="/create-class" element={<ProtectedRoute roles={['teacher']}><CreateClass /></ProtectedRoute>} />
         <Route path="/marks" element={<ProtectedRoute roles={['teacher', 'admin']}><Marks /></ProtectedRoute>} />
       </Route>
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

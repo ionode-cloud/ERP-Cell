@@ -37,7 +37,7 @@ export default function Fees() {
 
     const fetchBranches = async () => {
         try { const res = await api.get('/branches'); setBranches(res.data.data || []); }
-        catch { }
+        catch { toast.error('Failed to load branches'); }
     };
 
     useEffect(() => { fetchBranches(); }, []);
@@ -114,16 +114,16 @@ export default function Fees() {
     };
 
     // Summary stats
-    const totalFees = fees.reduce((s, f) => s + (f.totalAmount || 0), 0);
-    const totalPaid = fees.reduce((s, f) => s + (f.paidAmount || 0), 0);
-    const totalDue = fees.reduce((s, f) => s + (f.dueAmount || 0), 0);
+    const totalFees = filtered.reduce((s, f) => s + (f.totalAmount || 0), 0);
+    const totalPaid = filtered.reduce((s, f) => s + (f.paidAmount || 0), 0);
+    const totalDue = filtered.reduce((s, f) => s + (f.dueAmount || 0), 0);
 
     return (
         <div className="page">
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Fee Management</h1>
-                    <p className="page-subtitle">{fees.length} fee records</p>
+                    <p className="page-subtitle">{filtered.length} fee records</p>
                 </div>
                 <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' }}>
                     <button className="btn-secondary" style={{ borderColor: '#f59e0b', color: '#d97706' }} onClick={() => { setAlertModal(true); setAlertResult(null); }}>

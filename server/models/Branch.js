@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const feeStructureSchema = new mongoose.Schema({
     totalFee: { type: Number, default: 0 },
-    tuitionFee: { type: Number, default: 0 },
+    tuitionFee: { type: Number, default: 0},
     examFee: { type: Number, default: 0 },
     labFee: { type: Number, default: 0 },
     otherFee: { type: Number, default: 0 }

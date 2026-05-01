@@ -23,14 +23,28 @@ export default function Branches() {
     useEffect(() => { fetchBranches(); }, []);
 
     const openAdd = () => { setEditId(null); setForm(emptyForm); setModal(true); };
-    const openEdit = (b) => { setEditId(b._id); setForm(b); setModal(true); };
+    const openEdit = (b) => {
+        setEditId(b._id);
+        setForm({
+            ...b,
+            totalFee: b.feeStructure?.totalFee || ''
+        });
+        setModal(true);
+    };
     const closeModal = () => { setModal(false); setForm(emptyForm); setEditId(null); };
 
     const handleSubmit = async (e) => {
         e.preventDefault(); setSaving(true);
+        const payload = {
+            ...form,
+            feeStructure: {
+                ...form.feeStructure,
+                totalFee: Number(form.totalFee) || 0
+            }
+        };
         try {
-            if (editId) { await api.put(`/branches/${editId}`, form); toast.success('Branch updated'); }
-            else { await api.post('/branches', form); toast.success('Branch added'); }
+            if (editId) { await api.put(`/branches/${editId}`, payload); toast.success('Branch updated'); }
+            else { await api.post('/branches', payload); toast.success('Branch added'); }
             closeModal(); fetchBranches();
         } catch (err) { toast.error(err?.response?.data?.message || 'Error'); }
         finally { setSaving(false); }
@@ -59,7 +73,9 @@ export default function Branches() {
                                 <h3>{b.name}</h3>
                                 {b.code && <span className="badge">{b.code}</span>}
                                 {b.description && <p>{b.description}</p>}
-                                {b.totalFee && <p className="branch-fee">Total Fee: ₹{Number(b.totalFee).toLocaleString()}</p>}
+                                {(b.feeStructure?.totalFee !== undefined) && (
+                                    <p className="branch-fee">Total Fee: ₹{Number(b.feeStructure.totalFee).toLocaleString()}</p>
+                                )}
                             </div>
                             <div className="branch-actions">
                                 <button className="btn-icon btn-edit" onClick={() => openEdit(b)}><Edit2 size={15} /></button>

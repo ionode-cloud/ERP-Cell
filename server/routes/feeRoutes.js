@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getAllFees, getStudentFee, getMyFee, addPayment, addBranchFee, sendPaymentAlert, getRevenueSummary } = require('../controllers/feeController');
+const { getAllFees, getStudentFee, getMyFee, addPayment, addBranchFee, sendPaymentAlert, getRevenueSummary, getMyAlerts } = require('../controllers/feeController');
 const { protect } = require('../middleware/authMiddleware');
 const { allowRoles } = require('../middleware/roleMiddleware');
 
+router.get('/alerts', protect, allowRoles('student'), getMyAlerts);
 router.get('/summary', protect, allowRoles('admin'), getRevenueSummary);
 router.get('/me', protect, allowRoles('student'), getMyFee);
 router.get('/', protect, allowRoles('admin'), getAllFees);

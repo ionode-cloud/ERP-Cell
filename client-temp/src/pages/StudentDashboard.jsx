@@ -48,6 +48,7 @@ export default function StudentDashboard() {
     const [attendance, setAttendance] = useState([]);
     const [attStats, setAttStats] = useState({ total: 0, present: 0, absent: 0, late: 0, percentage: 0 });
     const [marks, setMarks] = useState([]);
+    const [alerts, setAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
     const [showPw, setShowPw] = useState(false);
@@ -62,14 +63,16 @@ export default function StudentDashboard() {
     useEffect(() => {
         const fetchAll = async () => {
             try {
-                const [profRes, feeRes, attRes, markRes] = await Promise.all([
+                const [profRes, feeRes, attRes, markRes, alertRes] = await Promise.all([
                     api.get('/students/me'),
                     api.get('/fees/me'),
                     api.get('/attendance/me'),
                     api.get('/marks/me'),
+                    api.get('/fees/alerts'),
                 ]);
                 setProfile(profRes.data.data);
                 setFees(feeRes.data.data);
+                setAlerts(alertRes.data.data || []);
                 const attData = attRes.data.data;
                 const records = Array.isArray(attData) ? attData : (attData?.records || []);
                 setAttendance(records);
@@ -139,9 +142,25 @@ export default function StudentDashboard() {
                 </div>
             </div>
 
+            {/* ── Fee Alerts ── */}
+            {alerts.map(alert => (
+                <div key={alert._id} className="alert-banner alert-warning" style={{ marginBottom: '1rem', borderLeft: '4px solid #d97706' }}>
+                    <AlertTriangle size={20} color="#d97706" />
+                    <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <strong>{alert.title}</strong>
+                            <span style={{ fontSize: '.7rem', color: '#92400e' }}>
+                                {new Date(alert.createdAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
+                            </span>
+                        </div>
+                        <p style={{ margin: '2px 0 0', fontSize: '.85rem' }}>{alert.message}</p>
+                    </div>
+                </div>
+            ))}
+
             {/* ── Low Attendance Warning ── */}
             {isLowAttendance && (
-                <div className="alert-banner alert-warning">
+                <div className="alert-banner alert-warning" style={{ marginBottom: '1rem' }}>
                     <AlertTriangle size={20} />
                     <div>
                         <strong>Attendance Shortage Warning</strong>

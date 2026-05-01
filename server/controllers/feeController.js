@@ -1,6 +1,7 @@
 const Fee = require('../models/Fee');
 const Branch = require('../models/Branch');
 const Student = require('../models/Student');
+const Alert = require('../models/Alert');
 
 // @desc  Get all fees (admin)
 const getAllFees = async (req, res) => {
@@ -108,7 +109,23 @@ const sendPaymentAlert = async (req, res) => {
         const fees = await Fee.find(query).populate('student', 'name rollNo email');
         const unpaid = fees.filter(f => (f.dueAmount > 0) && f.student);
 
-        // In a real system you'd send email/SMS. Here we simulate and return who was alerted.
+        // Create persistent alerts in the database
+        const oneWeekFromNow = new Date();
+        oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+
+        const alertPromises = unpaid.map(f => {
+            return Alert.create({
+                student: f.student._id,
+                title: 'Fee Payment Pending',
+                message: `Dear ${f.student.name}, your fee payment of ₹${f.dueAmount.toLocaleString()} is pending. Please clear it as soon as possible.`,
+                type: 'fee',
+                expiresAt: oneWeekFromNow
+            });
+        });
+
+        await Promise.all(alertPromises);
+
+        // Return who was alerted
         const alerted = unpaid.map(f => ({
             name: f.student.name,
             rollNo: f.student.rollNo,
@@ -119,7 +136,7 @@ const sendPaymentAlert = async (req, res) => {
 
         res.json({
             success: true,
-            message: `Alert simulated for ${alerted.length} student(s) with pending dues`,
+            message: `Alert sent to ${alerted.length} student(s). Message will be visible on their dashboard for 1 week.`,
             data: alerted,
         });
     } catch (error) {
@@ -166,4 +183,21 @@ const getRevenueSummary = async (req, res) => {
     }
 };
 
-module.exports = { getAllFees, getStudentFee, getMyFee, addPayment, addBranchFee, sendPaymentAlert, getRevenueSummary };
+// @desc  Get active alerts for logged-in student
+const getMyAlerts = async (req, res) => {
+    try {
+        const student = await Student.findOne({ userId: req.user._id });
+        if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+        
+        const alerts = await Alert.find({ 
+            student: student._id,
+            expiresAt: { $gte: new Date() } 
+        }).sort({ createdAt: -1 });
+        
+        res.json({ success: true, data: alerts });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = { getAllFees, getStudentFee, getMyFee, addPayment, addBranchFee, sendPaymentAlert, getRevenueSummary, getMyAlerts };

@@ -57,8 +57,11 @@ const updateBranch = async (req, res) => {
 // @desc  Delete branch
 const deleteBranch = async (req, res) => {
     try {
+        const branch = await Branch.findById(req.params.id);
+        if (!branch) return res.status(404).json({ success: false, message: 'Branch not found' });
         const studentCount = await Student.countDocuments({ branch: req.params.id, isActive: true });
-        if (studentCount > 0) return res.status(400).json({ success: false, message: `Cannot delete branch with ${studentCount} active students` });
+        if (studentCount > 0)
+            return res.status(400).json({ success: false, message: `Cannot delete: ${studentCount} active student(s) are assigned to this branch. Reassign or deactivate them first.` });
         await Branch.findByIdAndUpdate(req.params.id, { isActive: false });
         res.json({ success: true, message: 'Branch deleted successfully' });
     } catch (error) {

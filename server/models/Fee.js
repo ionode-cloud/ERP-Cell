@@ -5,7 +5,15 @@ const paymentSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
     method: { type: String, enum: ['Cash', 'Online', 'Cheque', 'Bank Transfer'], default: 'Cash' },
     transactionId: { type: String, default: '' },
-    remarks: { type: String, default: '' }
+    remarks: { type: String, default: '' },
+    description: { type: String, default: '' }
+}, { _id: true });
+
+const chargeSchema = new mongoose.Schema({
+    amount: { type: Number, required: true },
+    date: { type: Date, default: Date.now },
+    description: { type: String, default: '' },
+    appliedBy: { type: String, default: 'Admin' }
 }, { _id: true });
 
 const feeSchema = new mongoose.Schema({
@@ -15,6 +23,7 @@ const feeSchema = new mongoose.Schema({
     paidAmount: { type: Number, default: 0 },
     dueAmount: { type: Number, default: 0 },
     payments: [paymentSchema],
+    charges: [chargeSchema],
     academicYear: { type: String, default: () => `${new Date().getFullYear()}-${new Date().getFullYear() + 1}` }
 }, { timestamps: true });
 

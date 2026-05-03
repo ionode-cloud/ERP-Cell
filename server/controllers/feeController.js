@@ -84,8 +84,13 @@ const addBranchFee = async (req, res) => {
         const results = [];
         for (const fee of fees) {
             fee.totalAmount = (fee.totalAmount || 0) + Number(amount);
-            // Optionally could store remarks in a new array like `appliedFees` if schema allowed, 
-            // but simply increasing totalAmount works because dueAmount is calculated via pre-save hook.
+            // Record this charge in the charges history so students can see it
+            fee.charges.push({
+                amount: Number(amount),
+                description: remarks || 'Additional branch fee',
+                appliedBy: 'Admin',
+                date: new Date()
+            });
             const saved = await fee.save();
             results.push(saved);
         }

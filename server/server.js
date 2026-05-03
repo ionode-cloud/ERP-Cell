@@ -17,10 +17,17 @@ const app = express();
 // Connect to Database
 connectDB();
 
-// Middleware — allow all origins
+// Middleware — allow all origins (manual headers + cors package)
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+    next();
+});
 app.use(cors());
-app.options('*', cors()); // pre-flight for all routes
 app.use(express.json());
+
 
 // Routes
 app.use('/api/auth', authRoutes);

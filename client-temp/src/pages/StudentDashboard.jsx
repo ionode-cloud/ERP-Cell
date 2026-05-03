@@ -237,19 +237,50 @@ export default function StudentDashboard() {
                                 <div className="progress-label"><span>Payment Progress</span><span>{feePercent}%</span></div>
                                 <div className="progress-bar-bg"><div className="progress-bar-fill" style={{ width: `${feePercent}%`, background: feePercent === 100 ? '#059669' : '#2563eb' }} /></div>
                             </div>
-                            {fees?.payments?.length > 0 && (
-                                <div className="payment-history">
-                                    <div className="payment-history-title">Payment History</div>
-                                    <table className="mini-table">
-                                        <thead><tr><th>#</th><th>Amount</th><th>Method</th><th>Date</th></tr></thead>
-                                        <tbody>
-                                            {fees.payments.map((p, i) => (
-                                                <tr key={i}><td>{i + 1}</td><td>₹{p.amount?.toLocaleString()}</td><td>{p.method || '—'}</td><td>{p.date ? new Date(p.date).toLocaleDateString() : '—'}</td></tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
+                            {(() => {
+                                const payments = (fees?.payments || []).map(p => ({
+                                    date: p.date,
+                                    amount: p.amount,
+                                    type: 'payment',
+                                    method: p.method || 'Cash',
+                                    description: p.remarks || p.description || '—',
+                                }));
+                                const charges = (fees?.charges || []).map(c => ({
+                                    date: c.date,
+                                    amount: c.amount,
+                                    type: 'charge',
+                                    method: 'Branch Fee',
+                                    description: c.description || 'Additional branch fee',
+                                }));
+                                const history = [...payments, ...charges].sort((a, b) => new Date(b.date) - new Date(a.date));
+                                if (history.length === 0) return null;
+                                return (
+                                    <div className="payment-history">
+                                        <div className="payment-history-title">Fee History</div>
+                                        <table className="mini-table">
+                                            <thead><tr><th>#</th><th>Type</th><th>Amount</th><th>Method</th><th>Description</th><th>Date</th></tr></thead>
+                                            <tbody>
+                                                {history.map((h, i) => (
+                                                    <tr key={i}>
+                                                        <td>{i + 1}</td>
+                                                        <td>
+                                                            <span style={{ fontSize: '.72rem', fontWeight: 700, padding: '2px 7px', borderRadius: 20, background: h.type === 'payment' ? '#d1fae5' : '#fee2e2', color: h.type === 'payment' ? '#065f46' : '#991b1b' }}>
+                                                                {h.type === 'payment' ? 'Payment' : 'Charge'}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ fontWeight: 700, color: h.type === 'payment' ? '#059669' : '#dc2626' }}>
+                                                            {h.type === 'payment' ? '' : '+'}₹{h.amount?.toLocaleString()}
+                                                        </td>
+                                                        <td>{h.method}</td>
+                                                        <td>{h.description}</td>
+                                                        <td>{h.date ? new Date(h.date).toLocaleDateString() : '—'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         {/* Attendance */}

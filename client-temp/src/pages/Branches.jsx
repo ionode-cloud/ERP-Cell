@@ -52,8 +52,8 @@ export default function Branches() {
 
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this branch?')) return;
-        try { await api.delete(`/branches/${id}`); toast.success('Deleted'); fetchBranches(); }
-        catch { toast.error('Delete failed'); }
+        try { await api.delete(`/branches/${id}`); toast.success('Branch deleted'); fetchBranches(); }
+        catch (err) { toast.error(err?.response?.data?.message || 'Delete failed'); }
     };
 
     return (

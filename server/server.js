@@ -19,18 +19,8 @@ connectDB();
 
 // Middleware
 const corsOptions = {
-    origin: function (origin, callback) {
-       const allowedOrigins = [
-    'https://erp-cell.ionode.cloud',
-    'http://localhost:5173'
-];
-        if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
+    origin: '*',
+    credentials: false,
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Enable pre-flight for all routes

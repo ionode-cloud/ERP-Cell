@@ -17,13 +17,9 @@ const app = express();
 // Connect to Database
 connectDB();
 
-// Middleware
-const corsOptions = {
-    origin: '*',
-    credentials: false,
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
+// Middleware — allow all origins
+app.use(cors());
+app.options('*', cors()); // pre-flight for all routes
 app.use(express.json());
 
 // Routes
